@@ -40,22 +40,21 @@ The product must have these components each fulfilling a useful function:
 #### Task 3 (approved by TA during the lab).
 Produce a plan including:
 - prioritized requirements;
-- a clear breakdown of requirements into **three product versions.**
+- a clear breakdown of requirements into **two product versions.**
 
-About product versions:
-- Each product version builds upon the previous.
-- Each must be a functioning product in itself.
-- Test each version upon completing, before proceeding to the next one.
-
-First version must do one core thing well. Pick what brings the most value to end-user and is easier to implement. 
+About two product versions:
+- Version 1 is a functioning product that does one core thing well. Pick the feature most valuable to the end-user and relatively easy to implement.
+- Test Version 1 upon completion, show it to the TA and take note of their feedback.
+- Version 2 builds upon Version 1 and takes TA feedback from the lab into account.
 
 #### Task 4 (product version 1 approved by TA during the lab).
-- Implement the core features outlined in the plan
+- Implement both versions outlined in the plan
 - Publish all code as a repo on github.
 - Dockerize all services.
 - Deploy it to be accessible to use.
 
-Version 1 must be shown and approved by the TA during the lab. Product versions 2 and 3 can be done during the lab or after the lab.
+Version 1 must be shown and approved by the TA during the lab. 
+Version 2 can be done during the lab or after the lab before the usual deadline.
 
 
 #### Task 5.
@@ -82,7 +81,7 @@ Submit presentation with five slides:
 5. Links:
   - Link and QR code for each of these:
     - The GitHub repo with the product code
-    - Deployed product
+    - Deployed product (latest version)
 
 ----
 
