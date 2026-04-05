@@ -1,0 +1,449 @@
+[
+  {
+    "id": "ORD-0001",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "silvia",
+      "name": "Nissan Silvia S15",
+      "years": "1999-2002",
+      "image": "https://example.com/silvia.jpg",
+      "description": "Идеальный автомобиль для дрифта с двигателем SR20DET"
+    },
+    "engine": {
+      "id": "sr20-stock",
+      "name": "SR20DET Stock",
+      "power": "250 л.с.",
+      "description": "Стоковый турбомотор"
+    },
+    "suspension": {
+      "id": "drift",
+      "name": "Drift Spec",
+      "description": "Настройка для дрифта с увеличенным углом выворота",
+      "ride_height": "-60 мм",
+      "dampening": "Жёсткая перед / средняя зад",
+      "spring_rate": "10-12 кг/мм",
+      "camber": "-2.0° перед / -1.0° зад",
+      "use_case": "Дрифт, соревнования"
+    },
+    "bodykit": {
+      "id": "n1",
+      "name": "N1 / Origin Labo",
+      "description": "Стиль 90-х с широкими арками в стиле Super Silhouette",
+      "components": [
+        "Широкие арки N1",
+        "Передний бампер",
+        "Задний бампер",
+        "Боковые юбки",
+        "GT крыло"
+      ],
+      "style": "Retro 90s Super Silhouette",
+      "price_range": "$2000-3500"
+    },
+    "wheels": {
+      "id": "rays_volk",
+      "name": "Rays Volk Racing TE37",
+      "description": "Легендарные кованые диски, икона JDM",
+      "sizes": "17x9 / 18x9.5 / 18x10.5",
+      "weight": "7.2 кг (17\")",
+      "style": "6 спиц",
+      "price_range": "$1200-1800/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 13:10:59",
+    "updated_at": "2026-04-04 13:57:33"
+  },
+  {
+    "id": "ORD-0002",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "skyline",
+      "name": "Nissan Skyline R34 GT-R",
+      "years": "1999-2002",
+      "image": "https://example.com/skyline.jpg",
+      "description": "Godzilla - легендарный полноприводный спорткар с RB26DETT"
+    },
+    "engine": {
+      "id": "rb26-stock",
+      "name": "RB26DETT Stock",
+      "power": "280 л.с.",
+      "description": "Стоковый мотор Godzilla"
+    },
+    "suspension": {
+      "id": "track",
+      "name": "Track Attack",
+      "description": "Трековая настройка для максимальной производительности",
+      "ride_height": "-70 мм",
+      "dampening": "Жёсткая",
+      "spring_rate": "12-14 кг/мм",
+      "camber": "-2.5°",
+      "use_case": "Трек-дни, тайм-атак"
+    },
+    "bodykit": {
+      "id": "pandem_wide",
+      "name": "Pandem Wide Arch",
+      "description": "Экстремально широкие арки для максимального эффекта",
+      "components": [
+        "Экстра-широкие передние арки",
+        "Экстра-широкие задние арки",
+        "Агрессивный передний сплиттер",
+        "Задний диффузор",
+        "Боковые юбки",
+        "Большое GT крыло"
+      ],
+      "style": "Экстремальный widebody",
+      "price_range": "$2500-4500"
+    },
+    "wheels": {
+      "id": "rays_volk_g25",
+      "name": "Rays Volk Racing G25",
+      "description": "Современная классика от Rays, 5 спиц",
+      "sizes": "18x9 / 18x9.5 / 18x10.5",
+      "weight": "7.5 кг (18\")",
+      "style": "5 спиц",
+      "price_range": "$1300-1800/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 13:23:39",
+    "updated_at": "2026-04-04 13:57:30"
+  },
+  {
+    "id": "ORD-0003",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "skyline",
+      "name": "Nissan Skyline R34 GT-R",
+      "years": "1999-2002",
+      "image": "https://example.com/skyline.jpg",
+      "description": "Godzilla - легендарный полноприводный спорткар с RB26DETT"
+    },
+    "engine": {
+      "id": "rb26-stock",
+      "name": "RB26DETT Stock",
+      "power": "280 л.с.",
+      "description": "Стоковый мотор Godzilla"
+    },
+    "suspension": {
+      "id": "track",
+      "name": "Track Attack",
+      "description": "Трековая настройка для максимальной производительности",
+      "ride_height": "-70 мм",
+      "dampening": "Жёсткая",
+      "spring_rate": "12-14 кг/мм",
+      "camber": "-2.5°",
+      "use_case": "Трек-дни, тайм-атак"
+    },
+    "bodykit": {
+      "id": "pandem_wide",
+      "name": "Pandem Wide Arch",
+      "description": "Экстремально широкие арки для максимального эффекта",
+      "components": [
+        "Экстра-широкие передние арки",
+        "Экстра-широкие задние арки",
+        "Агрессивный передний сплиттер",
+        "Задний диффузор",
+        "Боковые юбки",
+        "Большое GT крыло"
+      ],
+      "style": "Экстремальный widebody",
+      "price_range": "$2500-4500"
+    },
+    "wheels": {
+      "id": "rays_volk_g25",
+      "name": "Rays Volk Racing G25",
+      "description": "Современная классика от Rays, 5 спиц",
+      "sizes": "18x9 / 18x9.5 / 18x10.5",
+      "weight": "7.5 кг (18\")",
+      "style": "5 спиц",
+      "price_range": "$1300-1800/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 13:33:57",
+    "updated_at": "2026-04-04 13:57:27"
+  },
+  {
+    "id": "ORD-0004",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "rx7",
+      "name": "Mazda RX-7 FD",
+      "years": "1992-2002",
+      "image": "https://example.com/rx7.jpg",
+      "description": "Спорткар с роторно-поршневым двигателем 13B-REW"
+    },
+    "engine": {
+      "id": "13b-stock",
+      "name": "13B-REW Stock",
+      "power": "280 л.с.",
+      "description": "Стоковый ротор с твин-турбо"
+    },
+    "suspension": {
+      "id": "sport",
+      "name": "Sport Setup",
+      "description": "Спортивная настройка для активных поездок",
+      "ride_height": "-50 мм",
+      "dampening": "Средняя",
+      "spring_rate": "8-10 кг/мм",
+      "camber": "-1.5°",
+      "use_case": "Спортивная езда, горные дороги"
+    },
+    "bodykit": {
+      "id": "rocket_bunny",
+      "name": "Rocket Bunny / Pandem",
+      "description": "Широкие арки из стекловолокна, агрессивный вид",
+      "components": [
+        "Широкие передние крылья",
+        "Широкие задние крылья",
+        "Передний бампер",
+        "Задний бампер",
+        "Пороги",
+        "Сплиттер",
+        "ГТ-крыло"
+      ],
+      "style": "Агрессивный widebody",
+      "price_range": "$2500-4000"
+    },
+    "wheels": {
+      "id": "rays_volk_g25",
+      "name": "Rays Volk Racing G25",
+      "description": "Современная классика от Rays, 5 спиц",
+      "sizes": "18x9 / 18x9.5 / 18x10.5",
+      "weight": "7.5 кг (18\")",
+      "style": "5 спиц",
+      "price_range": "$1300-1800/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 13:39:02",
+    "updated_at": "2026-04-04 13:57:22"
+  },
+  {
+    "id": "ORD-0005",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "rx7",
+      "name": "Mazda RX-7 FD",
+      "years": "1992-2002",
+      "image": "https://example.com/rx7.jpg",
+      "description": "Спорткар с роторно-поршневым двигателем 13B-REW"
+    },
+    "engine": {
+      "id": "13b-single",
+      "name": "13B-REW Single Turbo",
+      "power": "400-600 л.с.",
+      "description": "Конверсия на один турбо Precision/Garrett"
+    },
+    "suspension": {
+      "id": "drift",
+      "name": "Drift Spec",
+      "description": "Настройка для дрифта с увеличенным углом выворота",
+      "ride_height": "-60 мм",
+      "dampening": "Жёсткая перед / средняя зад",
+      "spring_rate": "10-12 кг/мм",
+      "camber": "-2.0° перед / -1.0° зад",
+      "use_case": "Дрифт, соревнования"
+    },
+    "bodykit": {
+      "id": "n1",
+      "name": "N1 / Origin Labo",
+      "description": "Стиль 90-х с широкими арками в стиле Super Silhouette",
+      "components": [
+        "Широкие арки N1",
+        "Передний бампер",
+        "Задний бампер",
+        "Боковые юбки",
+        "GT крыло"
+      ],
+      "style": "Retro 90s Super Silhouette",
+      "price_range": "$2000-3500"
+    },
+    "wheels": {
+      "id": "bbs_rs",
+      "name": "BBS RS-GT",
+      "description": "Немецкая классика с золотыми спицами",
+      "sizes": "17x8.5 / 18x9 / 18x9.5",
+      "weight": "7.8 кг (17\")",
+      "style": "Mesh золотые спицы",
+      "price_range": "$1800-2500/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 13:41:55",
+    "updated_at": "2026-04-04 13:53:49"
+  },
+  {
+    "id": "ORD-0006",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "rx7",
+      "name": "Mazda RX-7 FD",
+      "years": "1992-2002",
+      "image": "https://example.com/rx7.jpg",
+      "description": "Спорткар с роторно-поршневым двигателем 13B-REW"
+    },
+    "engine": {
+      "id": "13b-stock",
+      "name": "13B-REW Stock",
+      "power": "280 л.с.",
+      "description": "Стоковый ротор с твин-турбо"
+    },
+    "suspension": {
+      "id": "street",
+      "name": "Street Comfort",
+      "description": "Комфортная настройка для ежедневной езды",
+      "ride_height": "-30 мм",
+      "dampening": "Мягкая",
+      "spring_rate": "6-8 кг/мм",
+      "camber": "-1.0°",
+      "use_case": "Ежедневная езда, круизы"
+    },
+    "bodykit": {
+      "id": "pandem_wide",
+      "name": "Pandem Wide Arch",
+      "description": "Экстремально широкие арки для максимального эффекта",
+      "components": [
+        "Экстра-широкие передние арки",
+        "Экстра-широкие задние арки",
+        "Агрессивный передний сплиттер",
+        "Задний диффузор",
+        "Боковые юбки",
+        "Большое GT крыло"
+      ],
+      "style": "Экстремальный widebody",
+      "price_range": "$2500-4500"
+    },
+    "wheels": {
+      "id": " Volk_racing_ce28n",
+      "name": "Rays Volk Racing CE28N",
+      "description": "6 спиц, кованые, идеальны для стэнса",
+      "sizes": "17x8.5 / 18x9 / 18x9.5",
+      "weight": "7.0 кг (17\")",
+      "style": "6 спиц",
+      "price_range": "$1400-2000/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 14:14:39",
+    "updated_at": "2026-04-04 14:15:03"
+  },
+  {
+    "id": "ORD-0007",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "skyline",
+      "name": "Nissan Skyline R34 GT-R",
+      "years": "1999-2002",
+      "image": "https://example.com/skyline.jpg",
+      "description": "Godzilla - легендарный полноприводный спорткар с RB26DETT"
+    },
+    "engine": {
+      "id": "rb26-stock",
+      "name": "RB26DETT Stock",
+      "power": "280 л.с.",
+      "description": "Стоковый мотор Godzilla"
+    },
+    "suspension": {
+      "id": "sport",
+      "name": "Sport Setup",
+      "description": "Спортивная настройка для активных поездок",
+      "ride_height": "-50 мм",
+      "dampening": "Средняя",
+      "spring_rate": "8-10 кг/мм",
+      "camber": "-1.5°",
+      "use_case": "Спортивная езда, горные дороги"
+    },
+    "bodykit": {
+      "id": "varis",
+      "name": "VARIS",
+      "description": "Японский премиум обвес, разработан на треке",
+      "components": [
+        "Карбоновый капот",
+        "Передний бампер с канардами",
+        "Задний диффузор",
+        "GT Wing",
+        "Пороги"
+      ],
+      "style": "Аэродинамический трековый",
+      "price_range": "$3000-5000"
+    },
+    "wheels": {
+      "id": "rays_volk_g25",
+      "name": "Rays Volk Racing G25",
+      "description": "Современная классика от Rays, 5 спиц",
+      "sizes": "18x9 / 18x9.5 / 18x10.5",
+      "weight": "7.5 кг (18\")",
+      "style": "5 спиц",
+      "price_range": "$1300-1800/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 14:35:53",
+    "updated_at": "2026-04-04 14:36:12"
+  },
+  {
+    "id": "ORD-0008",
+    "user_id": 5287674947,
+    "username": "Streetsrak3r",
+    "car": {
+      "id": "rx7",
+      "name": "Mazda RX-7 FD",
+      "years": "1992-2002",
+      "image": "https://example.com/rx7.jpg",
+      "description": "Спорткар с роторно-поршневым двигателем 13B-REW"
+    },
+    "engine": {
+      "id": "13b-single",
+      "name": "13B-REW Single Turbo",
+      "power": "400-600 л.с.",
+      "description": "Конверсия на один турбо Precision/Garrett"
+    },
+    "suspension": {
+      "id": "drift",
+      "name": "Drift Spec",
+      "description": "Настройка для дрифта с увеличенным углом выворота",
+      "ride_height": "-60 мм",
+      "dampening": "Жёсткая перед / средняя зад",
+      "spring_rate": "10-12 кг/мм",
+      "camber": "-2.0° перед / -1.0° зад",
+      "use_case": "Дрифт, соревнования"
+    },
+    "bodykit": {
+      "id": "rocket_bunny",
+      "name": "Rocket Bunny / Pandem",
+      "description": "Широкие арки из стекловолокна, агрессивный вид",
+      "components": [
+        "Широкие передние крылья",
+        "Широкие задние крылья",
+        "Передний бампер",
+        "Задний бампер",
+        "Пороги",
+        "Сплиттер",
+        "ГТ-крыло"
+      ],
+      "style": "Агрессивный widebody",
+      "price_range": "$2500-4000"
+    },
+    "wheels": {
+      "id": "rays_volk_g25",
+      "name": "Rays Volk Racing G25",
+      "description": "Современная классика от Rays, 5 спиц",
+      "sizes": "18x9 / 18x9.5 / 18x10.5",
+      "weight": "7.5 кг (18\")",
+      "style": "5 спиц",
+      "price_range": "$1300-1800/комплект"
+    },
+    "notes": "",
+    "status": "completed",
+    "created_at": "2026-04-04 14:59:54",
+    "updated_at": "2026-04-04 15:00:17"
+  }
+]

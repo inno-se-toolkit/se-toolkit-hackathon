@@ -1,0 +1,18 @@
+QA:
+- Who is your end user?
+- Car enthusiasts, specifically those who prefer old cars
+
+- What problem does your product solve for the end user?
+- User can order a used car from 90s or 00s and preorder custom works for a car (engine modifications or swap, suspension settings, bodykits).
+
+- What is the product idea in one sentence? (How does it solve the problem?)
+- Telegram bot with listed cars and a configurator for each.
+
+- What is the core feature of your product?
+- Configure a car by yourself
+
+- What is the additional feature of your product?
+- Order pretuned cars (Drift-Spec / Time-Attack-Spec / Wangan-Spec / Trackday-Spec)
+
+Configure a car (order) - enthusiast is the end user
+Get all orders - car service is the end user
