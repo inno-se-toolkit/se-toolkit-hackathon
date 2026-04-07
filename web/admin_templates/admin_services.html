@@ -9,26 +9,26 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🔧 Service Management</h1>
+            <h1 data-i18n="admin.services"> Service Management</h1>
             <nav class="admin-nav">
-                <a href="/dashboard" class="nav-link">Dashboard</a>
-                <a href="/orders" class="nav-link">Orders</a>
-                <a href="/for-sale" class="nav-link">Car Sales</a>
-                <a href="/stats" class="nav-link">Statistics</a>
-                <a href="/services" class="nav-link active">Services</a>
-                <a href="/profile" class="nav-link">Profile</a>
-                <button class="btn btn-secondary btn-small" onclick="handleLogout()">Logout</button>
+                <a href="/dashboard" class="nav-link" data-i18n="admin.dashboard">Dashboard</a>
+                <a href="/orders" class="nav-link" data-i18n="admin.orders">Orders</a>
+                <a href="/for-sale" class="nav-link" data-i18n="admin.carSales">Car Sales</a>
+                <a href="/stats" class="nav-link" data-i18n="admin.statistics">Statistics</a>
+                <a href="/services" class="nav-link active" data-i18n="admin.services">Services</a>
+                <a href="/profile" class="nav-link" data-i18n="admin.profile">Profile</a>
+                <button class="btn btn-secondary btn-small" onclick="handleLogout()" data-i18n="common.logout">Logout</button>
             </nav>
         </header>
 
         <!-- Services List -->
         <div class="services-list-section">
-            <h2>📋 Registered Services</h2>
-            <p style="color: #888; margin-bottom: 20px;">
+            <h2 data-i18n="admin.registeredServices"> Registered Services</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;" data-i18n="admin.registerInfo">
                 New services can register at <a href="/register" target="_blank">/register</a>
             </p>
             <div id="servicesList" class="services-grid">
-                <p class="loading">Loading services...</p>
+                <p class="loading" data-i18n="common.loading">Loading services...</p>
             </div>
         </div>
     </div>
@@ -42,5 +42,6 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/admin_services.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
 </body>
 </html>

@@ -34,7 +34,7 @@
             position: relative;
             overflow: hidden;
             border-radius: 12px;
-            background: #1a1a2e;
+            background: var(--bg-input);
             height: 500px;
         }
         .image-viewer img {
@@ -50,7 +50,7 @@
             width: 100%;
             height: 500px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #475569 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -130,7 +130,7 @@
             width: 100%;
             height: 500px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #475569 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -155,39 +155,40 @@
             flex-shrink: 0;
         }
         .thumbnail:hover, .thumbnail.active {
-            border-color: #64748b;
+            border-color: var(--accent-primary);
         }
         .car-info {
-            background: white;
+            background: var(--bg-secondary);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px var(--shadow-primary);
             margin-bottom: 24px;
+            border: 2px solid var(--border-primary);
         }
         .car-info h1 {
             margin: 0 0 12px 0;
-            color: #1a1a2e;
+            color: var(--text-secondary);
         }
         .car-price {
             font-size: 2em;
             font-weight: bold;
-            color: #64748b;
+            color: var(--accent-primary);
             margin: 16px 0;
         }
         .car-description {
-            color: #495057;
+            color: var(--text-tertiary);
             line-height: 1.7;
             margin: 20px 0;
         }
         .questionnaire-section {
-            background: #f8f9fa;
+            background: var(--bg-tertiary);
             padding: 24px;
             border-radius: 12px;
             margin: 24px 0;
         }
         .questionnaire-section h3 {
             margin-top: 0;
-            color: #1a1a2e;
+            color: var(--text-secondary);
         }
         .questionnaire-grid {
             display: grid;
@@ -196,21 +197,21 @@
             margin-top: 16px;
         }
         .questionnaire-item {
-            background: white;
+            background: var(--bg-secondary);
             padding: 16px;
             border-radius: 8px;
         }
         .questionnaire-item .label {
             font-size: 0.85em;
-            color: #6c757d;
+            color: var(--text-muted);
             margin-bottom: 4px;
         }
         .questionnaire-item .value {
             font-weight: 600;
-            color: #1a1a2e;
+            color: var(--text-primary);
         }
         .mods-list {
-            background: white;
+            background: var(--bg-secondary);
             padding: 20px;
             border-radius: 8px;
             margin-top: 16px;
@@ -221,7 +222,7 @@
         }
         .mods-list li {
             margin-bottom: 8px;
-            color: #495057;
+            color: var(--text-tertiary);
         }
         .mods-section {
             display: grid;
@@ -230,22 +231,22 @@
             margin-top: 24px;
         }
         .mod-card {
-            background: white;
+            background: var(--bg-secondary);
             padding: 16px;
             border-radius: 8px;
-            border-left: 4px solid #64748b;
+            border-left: 4px solid var(--accent-primary);
         }
         .mod-card h4 {
             margin: 0 0 8px 0;
-            color: #64748b;
+            color: var(--accent-primary);
         }
         .mod-card p {
             margin: 0;
-            color: #495057;
+            color: var(--text-tertiary);
             font-size: 0.95em;
         }
         .contact-section {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #475569 100%);
             color: white;
             padding: 30px;
             border-radius: 12px;
@@ -257,8 +258,8 @@
         }
         .contact-btn {
             display: inline-block;
-            background: white;
-            color: #64748b;
+            background: var(--bg-secondary);
+            color: var(--accent-primary);
             padding: 14px 32px;
             border-radius: 8px;
             text-decoration: none;
@@ -275,8 +276,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #666;
-            background: #1a1a2e;
+            color: var(--text-muted);
+            background: var(--bg-input);
             border-radius: 12px;
         }
     </style>
@@ -284,14 +285,14 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🚗 Car Details</h1>
+            <h1 data-i18n="marketplace.carDetails"> Car Details</h1>
             <nav class="main-nav">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/configurator" class="nav-link">Configurator</a>
-                <a href="/marketplace" class="nav-link">Marketplace</a>
-                <a href="/orders" class="nav-link">Orders</a>
-                <a href="/profile" class="nav-link">Profile</a>
-                <button onclick="handleLogout()" class="btn btn-secondary btn-small">Logout</button>
+                <a href="/" class="nav-link" data-i18n="configurator.home">Home</a>
+                <a href="/configurator" class="nav-link" data-i18n="configurator.configurator">Configurator</a>
+                <a href="/marketplace" class="nav-link" data-i18n="index.marketplace">Marketplace</a>
+                <a href="/orders" class="nav-link" data-i18n="index.myOrders">Orders</a>
+                <a href="/profile" class="nav-link" data-i18n="index.profile">Profile</a>
+                <button onclick="handleLogout()" class="btn btn-secondary btn-small" data-i18n="common.logout">Logout</button>
             </nav>
         </header>
 
@@ -359,7 +360,7 @@
                     ${car.images && car.images.length > 0
                         ? `<div class="image-viewer" id="imageViewer">
                             <img id="mainImage" src="${car.images[0]}" alt="${car.name}" draggable="false">
-                            <div class="zoom-hint">🖱️ Scroll to zoom • Drag to pan • Double-click to reset</div>
+                            <div class="zoom-hint">🖱 Scroll to zoom • Drag to pan • Double-click to reset</div>
                             <div class="zoom-level" id="zoomLevel">100%</div>
                             <div class="zoom-controls">
                                 <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
@@ -367,7 +368,7 @@
                                 <button class="zoom-btn" onclick="resetZoom()" title="Reset">⟲</button>
                             </div>
                            </div>`
-                        : `<div class="image-viewer-placeholder">🚗</div>`
+                        : `<div class="image-viewer-placeholder"></div>`
                     }
                     ${car.images && car.images.length > 1
                         ? `<div class="thumbnail-strip">
@@ -389,7 +390,7 @@
                 <!-- Questionnaire -->
                 ${Object.keys(questionnaire).length > 0 ? `
                 <div class="car-info">
-                    <h3>📋 Questionnaire</h3>
+                    <h3> Questionnaire</h3>
                     <div class="questionnaire-section" style="margin: 0; background: transparent; padding: 0;">
                         <div class="questionnaire-grid">
                             ${questionnaire.mileage ? `
@@ -425,7 +426,7 @@
                         </div>
                         ${modsList.length > 0 ? `
                         <div class="mods-list">
-                            <h4>🔧 Modifications List</h4>
+                            <h4> Modifications List</h4>
                             <ul>
                                 ${modsList.map(mod => `<li>${mod}</li>`).join('')}
                             </ul>
@@ -436,7 +437,7 @@
                 <!-- Modifications -->
                 ${(car.engine || car.suspension || car.bodykit || car.wheels) ? `
                 <div class="car-info">
-                    <h3>🛠️ Modifications</h3>
+                    <h3>🛠 Modifications</h3>
                     <div class="mods-section">
                         ${car.engine && car.engine.id ? `
                         <div class="mod-card">
@@ -466,7 +467,7 @@
                     <h3>Interested in this car?</h3>
                     <p>Contact us for more information or to schedule a viewing</p>
                     <a href="https://t.me/your_bot_username" class="contact-btn" target="_blank">
-                        💬 Message on Telegram
+                         Message on Telegram
                     </a>
                 </div>
             `;
@@ -683,5 +684,6 @@
         const carId = {{ car_id | tojson }};
         loadCar(carId);
     </script>
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
 </body>
 </html>

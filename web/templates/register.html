@@ -9,51 +9,52 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🏎️ JDM Config Web</h1>
-            <p class="subtitle">Create a new account</p>
+            <h1 data-i18n="index.title"> JDM Config Web</h1>
+            <p class="subtitle" data-i18n="auth.registerTitle"> Register</p>
         </header>
 
         <div class="login-form" style="max-width: 500px;">
-            <h2>📝 Register</h2>
+            <h2 data-i18n="auth.registerTitle"> Register</h2>
             <form id="registerForm">
                 <div class="form-group">
-                    <label for="username">Username *</label>
-                    <input type="text" id="username" class="input-field" placeholder="Choose a username" required>
+                    <label for="username"><span class="label-icon"></span> <span data-i18n="auth.username">Username</span> *</label>
+                    <input type="text" id="username" class="input-field" data-i18n="auth.usernamePlaceholder" placeholder="Choose a username" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password *</label>
-                    <input type="password" id="password" class="input-field" placeholder="Choose a password (min 4 chars)" required>
+                    <label for="password"><span class="label-icon"></span> <span data-i18n="auth.password">Password</span> *</label>
+                    <input type="password" id="password" class="input-field" data-i18n="auth.passwordPlaceholder" placeholder="Choose a password (min 4 chars)" required>
                 </div>
                 <div class="form-group">
                     <label for="telegram">
-                        <span class="label-icon">💬</span>
-                        Telegram Username
+                        <span class="label-icon"></span>
+                        <span data-i18n="auth.telegram">Telegram Username</span>
                     </label>
-                    <input type="text" id="telegram" class="input-field" placeholder="@your_username">
+                    <input type="text" id="telegram" class="input-field" data-i18n="auth.telegramPlaceholder" placeholder="@your_username">
                 </div>
                 <div class="form-group">
                     <label for="phone">
-                        <span class="label-icon">📱</span>
-                        Phone Number
+                        <span class="label-icon"></span>
+                        <span data-i18n="auth.phone">Phone Number</span>
                     </label>
-                    <input type="tel" id="phone" class="input-field" placeholder="+1234567890">
+                    <input type="tel" id="phone" class="input-field" data-i18n="auth.phonePlaceholder" placeholder="+1234567890">
                 </div>
                 <div class="form-group">
                     <label for="email">
-                        <span class="label-icon">📧</span>
-                        Email Address
+                        <span class="label-icon"></span>
+                        <span data-i18n="auth.email">Email Address</span>
                     </label>
-                    <input type="email" id="email" class="input-field" placeholder="your@email.com">
+                    <input type="email" id="email" class="input-field" data-i18n="auth.emailPlaceholder" placeholder="your@email.com">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="auth.registerButton">Register</button>
                 <div id="registerError" class="error-message" style="display: none;"></div>
             </form>
-            <p style="text-align: center; margin-top: 20px; color: #b8c0cc;">
-                Already have an account? <a href="/login" style="color: #58a6ff;">Login here</a>
+            <p style="text-align: center; margin-top: 20px; color: var(--text-tertiary);">
+                <span data-i18n="auth.hasAccount">Already have an account?</span> <a href="/login" style="color: var(--accent-secondary);" data-i18n="auth.loginNow">Login here</a>
             </p>
         </div>
     </div>
 
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
     <script>
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -77,11 +78,11 @@
                 if (data.success) {
                     window.location.href = '/';
                 } else {
-                    errorEl.textContent = data.message || 'Registration failed';
+                    errorEl.textContent = data.message || i18n.t('common.error');
                     errorEl.style.display = 'block';
                 }
             } catch (error) {
-                errorEl.textContent = 'Connection error';
+                errorEl.textContent = i18n.t('common.error');
                 errorEl.style.display = 'block';
             }
         });

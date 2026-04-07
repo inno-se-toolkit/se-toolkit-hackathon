@@ -9,19 +9,20 @@
         .form-container {
             max-width: 900px;
             margin: 20px auto;
-            background: white;
+            background: var(--bg-secondary);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px var(--shadow-primary);
+            border: 2px solid var(--border-primary);
         }
         .form-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-primary);
         }
         .form-section h3 {
             margin-top: 0;
-            color: #1a1a2e;
+            color: var(--text-secondary);
         }
         .form-group {
             margin-bottom: 16px;
@@ -30,16 +31,18 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
         }
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-primary);
             border-radius: 6px;
             font-size: 1em;
+            background: var(--bg-input);
+            color: var(--text-primary);
         }
         .form-group textarea {
             min-height: 100px;
@@ -51,7 +54,7 @@
             gap: 16px;
         }
         .image-upload-area {
-            border: 2px dashed #ddd;
+            border: 2px dashed var(--border-primary);
             border-radius: 8px;
             padding: 30px;
             text-align: center;
@@ -59,11 +62,11 @@
             transition: border-color 0.3s;
         }
         .image-upload-area:hover {
-            border-color: #64748b;
+            border-color: var(--accent-primary);
         }
         .image-upload-area.dragover {
-            border-color: #64748b;
-            background: #f0f4ff;
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
         }
         .image-preview-grid {
             display: grid;
@@ -86,9 +89,9 @@
             position: absolute;
             top: 4px;
             left: 4px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -100,7 +103,7 @@
             z-index: 2;
         }
         .image-preview-item .adjust-btn:hover {
-            background: #fff;
+            background: var(--bg-tertiary);
             transform: scale(1.1);
         }
         .image-preview-item .remove-btn {
@@ -140,17 +143,19 @@
             display: flex;
         }
         .modal-content {
-            background: white;
+            background: var(--bg-secondary);
             padding: 30px;
             border-radius: 12px;
             max-width: 600px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
+            border: 2px solid var(--border-primary);
         }
         .modal-content h2 {
             margin-top: 0;
             margin-bottom: 15px;
+            color: var(--text-secondary);
         }
 
         /* Cropper modal */
@@ -191,15 +196,15 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🚗 {{ 'Edit' if car else 'Add' }} Car for Sale</h1>
+            <h1 data-i18n="admin.editCar"> {{ 'Edit' if car else 'Add' }} Car for Sale</h1>
             <nav class="admin-nav">
-                <a href="/dashboard" class="nav-link">Dashboard</a>
-                <a href="/orders" class="nav-link">Orders</a>
-                <a href="/for-sale" class="nav-link active">Car Sales</a>
-                <a href="/stats" class="nav-link">Statistics</a>
-                <a href="/services" class="nav-link">Services</a>
-                <a href="/profile" class="nav-link">Profile</a>
-                <button class="btn btn-secondary btn-small" onclick="handleLogout()">Logout</button>
+                <a href="/dashboard" class="nav-link" data-i18n="admin.dashboard">Dashboard</a>
+                <a href="/orders" class="nav-link" data-i18n="admin.orders">Orders</a>
+                <a href="/for-sale" class="nav-link active" data-i18n="admin.carSales">Car Sales</a>
+                <a href="/stats" class="nav-link" data-i18n="admin.statistics">Statistics</a>
+                <a href="/services" class="nav-link" data-i18n="admin.services">Services</a>
+                <a href="/profile" class="nav-link" data-i18n="admin.profile">Profile</a>
+                <button class="btn btn-secondary btn-small" onclick="handleLogout()" data-i18n="common.logout">Logout</button>
             </nav>
         </header>
 
@@ -207,7 +212,7 @@
             <form id="carForm" onsubmit="saveCar(event)">
                 <!-- Basic Info -->
                 <div class="form-section">
-                    <h3>📋 Basic Information</h3>
+                    <h3> Basic Information</h3>
                     <div class="form-group">
                         <label for="name">Name *</label>
                         <input type="text" id="name" name="name" required placeholder="e.g. Toyota Supra A80 - Drift Spec">
@@ -230,7 +235,7 @@
 
                 <!-- Questionnaire -->
                 <div class="form-section">
-                    <h3>📝 Questionnaire</h3>
+                    <h3> Questionnaire</h3>
                     <div class="questionnaire-grid">
                         <div class="form-group">
                             <label for="q_mileage">Mileage (km)</label>
@@ -271,7 +276,7 @@
 
                 <!-- Modifications -->
                 <div class="form-section">
-                    <h3>🔧 Modifications</h3>
+                    <h3> Modifications</h3>
                     <div class="form-group">
                         <label for="engine">Engine</label>
                         <input type="text" id="engine" name="engine" placeholder="e.g. 2JZ-GTE Single Turbo, 700 hp">
@@ -292,7 +297,7 @@
 
                 <!-- Images -->
                 <div class="form-section">
-                    <h3>📸 Photos</h3>
+                    <h3> Photos</h3>
                     <div class="image-upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
                         <p style="font-size: 2em; margin: 0;">📷</p>
                         <p>Click or drag photos here</p>
@@ -387,7 +392,7 @@
                 html += `
                     <div class="image-preview-item">
                         <img src="${img}" alt="">
-                        <button type="button" class="adjust-btn" onclick="adjustExistingImage(${idx})" title="Adjust">✂️</button>
+                        <button type="button" class="adjust-btn" onclick="adjustExistingImage(${idx})" title="Adjust">✂</button>
                         <button type="button" class="remove-btn" onclick="removeExistingImage(${idx})">×</button>
                     </div>
                 `;
@@ -404,7 +409,7 @@
                 html += `
                     <div class="image-preview-item">
                         <img id="pending-${idx}" src="" alt="">
-                        <button type="button" class="adjust-btn" onclick="adjustPendingImage(${idx})" title="Adjust">✂️</button>
+                        <button type="button" class="adjust-btn" onclick="adjustPendingImage(${idx})" title="Adjust">✂</button>
                         <button type="button" class="remove-btn" onclick="removePendingImage(${idx})">×</button>
                     </div>
                 `;
@@ -645,7 +650,7 @@
     <!-- Image Cropper Modal -->
     <div id="imageCropperModal" class="modal">
         <div class="modal-content modal-cropper">
-            <h2>✂️ Adjust Photo</h2>
+            <h2>✂ Adjust Photo</h2>
             <p style="color:#666; font-size:0.9em; margin-bottom:15px;">Drag to reposition • Scroll to zoom</p>
             <div class="cropper-container">
                 <canvas id="cropperCanvas" width="800" height="533"></canvas>
@@ -660,5 +665,6 @@
             </div>
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
 </body>
 </html>

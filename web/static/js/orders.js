@@ -32,9 +32,9 @@ async function loadOrders() {
         if (orders.length === 0) {
             container.innerHTML = `
                 <div class="info-box">
-                    <h3>📋 You have no orders yet</h3>
-                    <p>First configure a car through the Configurator.</p>
-                    <a href="/configurator" class="btn btn-primary" style="margin-top: 20px;">🚗 Configurator</a>
+                    <h3 data-i18n="orders.noOrders">📋 You have no orders yet</h3>
+                    <p data-i18n="orders.createFirst">First configure a car through the Configurator.</p>
+                    <a href="/configurator" class="btn btn-primary" style="margin-top: 20px;" data-i18n="configurator.configurator">🚗 Configurator</a>
                 </div>
             `;
             return;
@@ -43,18 +43,18 @@ async function loadOrders() {
         displayOrders(orders);
     } catch (error) {
         console.error('Error loading orders:', error);
-        container.innerHTML = '<p class="loading">Error loading orders</p>';
+        container.innerHTML = '<p class="loading">' + (i18n ? i18n.t('orders.errorLoading') : 'Error loading orders') + '</p>';
     }
 }
 
 function displayOrders(orders) {
     const container = document.getElementById('ordersList');
-    
+
     const statusNames = {
-        'new': '🆕 New',
-        'in_progress': '🔧 In Progress',
-        'completed': '✅ Completed',
-        'cancelled': '❌ Cancelled'
+        'new': i18n ? i18n.t('status.new') : '🆕 New',
+        'in_progress': i18n ? i18n.t('status.inProgress') : '🔧 In Progress',
+        'completed': i18n ? i18n.t('status.completed') : '✅ Completed',
+        'cancelled': i18n ? i18n.t('status.cancelled') : '❌ Cancelled'
     };
     
     const statusClasses = {
