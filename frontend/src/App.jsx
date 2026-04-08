@@ -324,6 +324,18 @@ function translatePantryLabel(lang, name) {
   return lang === "ru" ? name : ingredientMap[name] || name;
 }
 
+function translateUnitLabel(lang, unitLabel) {
+  if (lang === "ru") return unitLabel;
+
+  const mapping = {
+    "₽/кг": "RUB/kg",
+    "₽/л": "RUB/L",
+    "₽/шт": "RUB/pc",
+  };
+
+  return mapping[unitLabel] || unitLabel;
+}
+
 function translateSummary(lang, summary) {
   if (lang === "ru" || !summary) return summary;
   return summary
@@ -1062,7 +1074,7 @@ export default function App() {
                     <div className="price-grid">
                       {meta.price_catalog.map((item) => (
                         <label key={item.name}>
-                          {translatePantryLabel(lang, item.name)} ({item.unit_label})
+                          {translatePantryLabel(lang, item.name)} ({translateUnitLabel(lang, item.unit_label)})
                           <input
                             type="number"
                             min="0"
