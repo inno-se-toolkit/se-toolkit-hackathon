@@ -1,24 +1,13 @@
-import sys
-from pathlib import Path
+# Run the application
 
-# Add the src directory to the Python path to allow imports
-src_dir = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(src_dir))
-
-
-def run_server():
-    """Run the uvicorn server with configured settings."""
-    import uvicorn
-    from app.settings import settings
-
-    uvicorn.run(
-        app="app.main:app",
-        host=settings.address,
-        port=settings.port,
-        reload=settings.reload,
-        reload_dirs=[str(src_dir)],
-    )
-
+import uvicorn
+from app.main import app
+from app.settings import settings
 
 if __name__ == "__main__":
-    run_server()
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=settings.debug,
+    )

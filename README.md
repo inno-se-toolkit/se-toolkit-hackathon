@@ -1,226 +1,264 @@
-# SE Toolkit LMS Assistant
+# MenuMate — Restaurant Allergen Advisor
 
-A lightweight, AI-powered Learning Management System assistant that provides both a Telegram bot and a web dashboard for accessing lab information, scores, and analytics. Built for educators and students to quickly retrieve course data via chat or a visual interface.
-
----
-
-## Demo
-
-Screenshots of the deployed product (to be added):
-
-### Web Dashboard — Items Page
-<!--
-Replace with a screenshot of the Items page showing the table of labs/tasks.
-Example: a browser window with the LMS Items table visible.
--->
-![Items page](docs/screenshots/items-page.png)
-
-### Web Dashboard — Analytics Dashboard
-<!--
-Replace with a screenshot of the Dashboard showing charts (score distribution, timeline, group performance, pass rates).
-Example: a browser window with the four charts visible.
--->
-![Dashboard](docs/screenshots/dashboard.png)
-
-### Telegram Bot — Commands
-<!--
-Replace with a screenshot of a Telegram conversation showing /start, /labs, /scores responses.
-Example: Telegram chat with bot responses and inline keyboard.
--->
-![Telegram bot](docs/screenshots/telegram-bot.png)
-
-> **Note:** Place the actual screenshots in `docs/screenshots/` and update the paths above.
+**One-line summary:** A web-first, Telegram-integrated system that lets restaurant guests instantly discover menu items safe for their allergies and dietary preferences (vegan, gluten-free, etc.), while providing staff a simple admin interface to keep the menu up to date.
 
 ---
 
-## Product Context
+## Context
 
-- **End users**
-  - Students and instructors in the SE Toolkit lab course who need quick access to lab assignments, submission scores, and class performance metrics.
+- **Domain:** Hospitality / Restaurant technology
+- **Intended end users:** Dining guests with food allergies or dietary preferences; restaurant managers/kitchen staff
+- **Point in the user’s workflow:** Post-seating / pre-order — a guest inspects the menu, quickly flags what they can (and cannot) eat, and places an order with confidence
+- **Problem:** Traditional menus list ingredients, but non-experts miss hidden allergens (e.g., “whey” = dairy) and cross-contamination cues; miscommunication risks health incidents and legal liability
+- **Solution:** A shared digital menu where each dish is tagged with ingredients and allergens; a conversational search engine + quick-filter chips answer natural-language queries (“no milk or nuts”) and highlight safe choices real-time
 
-- **Problem**
-  - Course data lives in a backend API, but there is no user-friendly way to explore it. Students must manually query endpoints or wait for instructor replies to know which labs are available, how they scored, or how the class performed.
+---
 
-- **Solution**
-  - Two complementary clients:
-    1. A Telegram bot that understands natural language and slash commands, powered by an LLM to route intents to backend tools.
-    2. A React web dashboard with interactive charts (Chart.js) for visual analytics.
-  Both are backed by a FastAPI + PostgreSQL service and are fully containerized for easy deployment.
+## Architecture
+
+```
+ ┌─────────────────┐      ┌──────────────┐      ┌─────────────────┐
+ │  Customer Web   │─────▶│  Reverse     │─────▶│  Backend FastAPI│
+ │  (index.html)   │      │  Proxy Caddy │      │  (Python)       │
+ │  Admin Web      │─────▶│  / /admin    │      │                 │
+ │  (admin.html)   │      └──────────────┘      │  • /api/dishes  │
+ └─────────────────┘                            │  • /api/check   │
+         │                                      │  • / /admin     │
+         │                                      └────────┬────────┘
+         │                                                │
+         │                                        PostgreSQL DB
+         │                                                │
+         ▼                                                ▼
+ ┌─────────────────┐                            ┌──────────────────┐
+ │ Telegram Bot    │────────────────────────────▶│  Dishes CRUD     │
+ │ (@bot)          │   REST API (/api/… )        │  Allergen filter │
+ └─────────────────┘                            └──────────────────┘
+```
 
 ---
 
 ## Features
 
 ### Implemented
-- **Backend (FastAPI + PostgreSQL)**
-  - REST endpoints for items, interactions, learners, analytics, and ETL pipeline
-  - API key authentication
-  - CORS enabled for frontend
-  - Database initialization with sample data
+- Customer-facing web page with search box + quick-filter chips for milk, nuts, gluten, soy, vegan, gluten-free
+- Admin page (`/admin`) for CRUD management of menu items (name, ingredients, allergens tag, vegan/GF flags)
+- RESTful backend (FastAPI) with OpenAPI docs: `/docs`
+  - `GET /` → customer UI
+  - `GET /admin` → admin UI
+  - `GET/POST /api/dishes` → list and create dishes
+  - `PUT/DELETE /api/dishes/{id}` → update and delete a dish
+  - `POST /api/check` → process an allergy/diet query and return safe dishes
+- PostgreSQL persistence via SQLModel/SQLAlchemy 2.0 async; indexed search
+- CORS-enabled frontend served either directly (dev) or through Caddy reverse proxy (prod)
+- Dockerised development stack: `docker compose up -d`
+- Telegram bot (`@your_bot`) with commands:
+  - `/start` — welcome message
+  - `/help` — usage summary
+  - `/menu` — current menu listing
+  - `/check <query>` — e.g. `/check no milk` or `/check vegan`
+  - Plain-text messages are routed to the same natural language checker (LLM-backed if configured)
+- LLM integration point for intent extraction / query expansion (optional)
 
-- **Telegram Bot**
-  - Slash commands: `/start`, `/help`, `/health`, `/labs`, `/scores <lab>`
-  - Natural language intent routing via LLM tool calling (9 backend endpoints exposed as tools)
-  - Inline keyboard buttons for common actions
-  - Offline `--test` mode for local testing without Telegram
-  - Comprehensive error handling and fallback responses
-
-- **Web Dashboard**
-  - API key connection flow (localStorage)
-  - Items page: table view of all labs/tasks
-  - Analytics dashboard with 4 charts:
-    - Submissions timeline (line chart)
-    - Score distribution (bar chart)
-    - Group performance (bar chart)
-    - Task pass rates (doughnut chart)
-  - Lab selector to switch between labs
-
-- **Infrastructure**
-  - Full Docker support (multi-stage builds, non-root runtime)
-  - `docker-compose.yml` with services: backend, postgres, pgadmin, caddy (reverse proxy + static file server), bot
-  - Caddy configuration serves frontend and routes API paths to backend
-  - Environment-variable-driven configuration
-
-### Not Yet Implemented (Future Work)
-- Rich formatting (tables, charts as images) in Telegram responses
-- Response caching for faster LLM and API replies
-- Conversation context for multi-turn dialogs
-- User authentication/authorization (OAuth, sessions)
-- Mobile app (React Native / Flutter)
-- Admin panel for data management
+### Not (Yet) Implemented
+- Authentication / role-based admin login
+- Audit log of who changed which menu item
+- Real-time ingredient inventory and substitution suggestions
+- On-call SMS/email escalation for critical allergen incidents
+- Advanced filter combinations (e.g. “vegan AND gluten-free AND no soy” — technically supported but UI chips are single-toggle)
 
 ---
 
-## Usage
+## Quick Start (Local Development, Ubuntu 24.04)
 
-### Quick start with Docker Compose
-
+### Prerequisites
 ```bash
-# 1. Clone the repository
-git clone https://github.com/<your-username>/se-toolkit-hackathon.git
+sudo apt update && sudo apt install -y docker.io docker-compose curl git
+sudo usermod -aG docker $USER  # log out/in afterwards
+```
+
+### Clone and configure
+```bash
+git clone https://github.com/<your-org>/se-toolkit-hackathon.git
 cd se-toolkit-hackathon
-
-# 2. Create a `.env.docker.secret` file (see Deployment section for required variables)
-cp .env.docker.example .env.docker.secret
-# Edit .env.docker.secret with your real values (bot token, API keys, etc.)
-
-# 3. Start all services
-docker compose --env-file .env.docker.secret up --build -d
-
-# 4. Verify services are running
-docker compose --env-file .env.docker.secret ps
+cp bot/.env.bot.example bot/.env.bot
+# Edit bot/.env.bot and set BOT_TOKEN (from @BotFather)
+# Optional: LLM_API_KEY and LLM_API_BASE_URL for smarter chat
+echo "POSTGRES_USER=postgres"   >> .env
+echo "POSTGRES_PASSWORD=postgres" >> .env
 ```
 
-#### Access points
-- **Web dashboard**: `http://<LMS_API_HOST_ADDRESS>:<LMS_API_HOST_PORT>` (default from `.env.docker.example`)
-- **Backend API docs (Swagger)**: `http://<LMS_API_HOST_ADDRESS>:<LMS_API_HOST_PORT>/docs`
-- **Telegram bot**: open Telegram and interact with your bot (set `BOT_TOKEN` in `.env.docker.secret`)
-- **pgAdmin**: `http://<PGADMIN_HOST_ADDRESS>:<PGADMIN_HOST_PORT>` (email/password from `.env.docker.secret`)
-
-#### Stopping
+### Start the stack (non-root users in containers where applicable)
 ```bash
-docker compose --env-file .env.docker.secret down
+docker compose up -d
 ```
 
-### Using the Telegram bot
+Verify:
+```bash
+docker compose ps
+docker compose logs -f backend
+```
+
+Access:
+- Customer UI: http://127.0.0.1:8000
+- Admin UI: http://127.0.0.1:8000/admin
+- API docs: http://127.0.0.1:8000/docs
+- pgAdmin: http://127.0.0.1:8085 (user `admin@example.com`, pass `admin`) — connect to
+  Host `postgres`, port `5432`, user `postgres`, password `postgres`
+
+### Create your first menu item
+1. Open Admin UI → fill the form and click **Save**.
+2. Return to the customer page and run a query like `"no milk"`.
+
+---
+
+## Manual Setup Without Docker (Ubuntu 24.04)
+
+> Use this when you want to run individually (e.g. staging).
 
 ```bash
-# Test a command locally (no Telegram token required)
+# 1. PostgreSQL (system-wide)
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres psql -c "CREATE DATABASE restaurant;"
+# Adjust pg_hba.conf for local md5 auth if needed, then restart:
+sudo systemctl restart postgresql
+
+# 2. Backend
+cd backend
+pip install uv
+uv sync  # installs to .venv
+cp .env.example .env  # edit DATABASE_URL if needed
+cp app/data/init.sql /tmp/seed.sql
+sudo -u postgres psql -d restaurant -f /tmp/seed.sql
+uv run app/run.py   # listens 0.0.0.0:8000
+
+# 3. Frontend (static)
+# No build step required — just serve the files with Caddy or Nginx.
+# Example Caddy config in /infra/caddy/Caddyfile.json
+caddy start --config infra/caddy/Caddyfile.json
+
+# 4. Telegram Bot
 cd bot
-uv run bot.py --test "/start"
-uv run bot.py --test "/labs"
-uv run bot.py --test "/scores lab-04"
-uv run bot.py --test "what labs are available?"
-
-# Run the bot in production (requires BOT_TOKEN, LMS_API_KEY, LLM_API_KEY, etc.)
-cp .env.bot.example .env.bot.secret
-# Edit .env.bot.secret with your secrets
+uv sync
+cp .env.bot.example .env.bot
 uv run bot.py
 ```
 
 ---
 
-## Deployment
+## Development Workflow
 
-### Target OS
-- Ubuntu 24.04 LTS (matches university VM images)
+- Backend changes: edit files under `backend/app/`; run `uv run app/run.py` (reload with `uvicorn --reload …` for faster iteration)
+- Frontend: iterate on `frontend/`. Caddy serves `/srv` directly; rebuild toggles required for Docker but no npm build needed for local changes
+- Bot: `uv run bot.py --test "no milk"` to validate routing without a live Telegram connection
+- DB migrations: currently schema is created on startup; for production state migrations, extend with Alembic (not yet wired)
 
-### Prerequisites on the VM
-- Docker Engine (latest)
-- Docker Compose plugin (`docker compose`)
-- Git
-- Internet access to pull base images (or a local mirror configured via `REGISTRY_PREFIX` in `.env.docker.secret`)
+---
 
-### Environment variables
+## Testing
 
-Create `.env.docker.secret` with at least:
-
-| Variable | Description |
-|----------|-------------|
-| `BACKEND_HOST_ADDRESS` | Host IP to bind backend (e.g., `0.0.0.0`) |
-| `BACKEND_HOST_PORT` | Host port for backend API (e.g., `42002`) |
-| `BACKEND_CONTAINER_PORT` | Container port (fastAPI) — usually `8000` |
-| `BACKEND_NAME` | Service name displayed in health checks |
-| `BACKEND_DEBUG` | `true` or `false` |
-| `BACKEND_CONTAINER_ADDRESS` | Container IP/hostname (usually `backend`) |
-| `BACKEND_ENABLE_INTERACTIONS` | `true`/`false` — enable interactions router |
-| `BACKEND_ENABLE_LEARNERS` | `true`/`false` — enable learners router |
-| `LMS_API_KEY` | API key for LMS backend authetication |
-| `AUTOCHECKER_API_URL`, `AUTOCHECKER_API_LOGIN`, `AUTOCHECKER_API_PASSWORD` | ETL sync source (optional — can be dummy values if not used) |
-| `POSTGRES_HOST_ADDRESS` | Host IP to bind PostgreSQL (e.g., `0.0.0.0`) |
-| `POSTGRES_HOST_PORT` | Host port for PostgreSQL (e.g., `42001`) |
-| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Database credentials |
-| `PGADMIN_HOST_ADDRESS`, `PGADMIN_HOST_PORT`, `PGADMIN_EMAIL`, `PGADMIN_PASSWORD` | pgAdmin access |
-| `CADDY_CONTAINER_PORT` | Container port for Caddy (usually `80`) |
-| `LMS_API_HOST_ADDRESS`, `LMS_API_HOST_PORT` | Public host/port for the entire application |
-| `BOT_TOKEN` | Telegram bot token from @BotFather |
-| `LLM_API_KEY` | LLM provider API key (Qwen or compatible) |
-| `LLM_API_BASE_URL` | LLM API base URL (e.g., `http://host.docker.internal:42005/v1` for local Qwen proxy) |
-| `LLM_API_MODEL` | Model name (e.g., `qwen-coder`) |
-| `QWEN_CODE_API_URL` | Qwen Code API URL for Caddy reverse proxy (optional) |
-
-See `.env.docker.example` for a template with all variables and comments.
-
-### Step-by-step deployment
-
+### Automated (backend unit tests)
 ```bash
-# 1. Prepare the system
-sudo apt-get update && sudo apt-get install -y docker.io docker-compose git
-
-# 2. Clone the repository
-git clone https://github.com/<your-username>/se-toolkit-hackathon.git
-cd se-toolkit-hackathon
-
-# 3. Create environment secrets
-cp .env.docker.example .env.docker.secret
-nano .env.docker.secret  # fill in real values
-
-# 4. Ensure the bot Docker image can be built (uv.lock and pyproject.toml are in repo)
-#    The multi-stage build uses astral/uv images; ensure network access to Docker Hub or your mirror.
-
-# 5. Build and start
-docker compose --env-file .env.docker.secret up --build -d
-
-# 6. Check health
-docker compose --env-file .env.docker.secret ps
-docker compose --env-file .env.docker.secret logs --tail 20
-
-# 7. Test the API:
-curl http://<LMS_API_HOST_ADDRESS>:<LMS_API_HOST_PORT>/items/ -H "Authorization: Bearer <LMS_API_KEY>"
-curl http://<LMS_API_HOST_ADDRESS>:<LMS_API_HOST_PORT>/health
-
-# 8. Open the web dashboard:
-#    http://<LMS_API_HOST_ADDRESS>:<LMS_API_HOST_PORT>
+cd backend
+uv run pytest
 ```
 
-### Updating
+### Manual smoke test (no Telegram required)
 ```bash
-git pull
-docker compose --env-file .env.docker.secret up --build -d
+cd bot
+uv run bot.py --test "/start"
+uv run bot.py --test "I'm allergic to milk and gluten"
 ```
+
+### End-to-end via API
+```bash
+# Health
+curl -s http://127.0.0.1:8000/healthz | jq
+
+# List dishes
+curl -s http://127.0.0.1:8000/api/dishes | jq '.[] | {id, name, allergens}'
+
+# Check allergies
+curl -s -X POST http://127.0.0.1:8000/api/check \
+  -H "Content-Type: application/json" \
+  -d '{"message": "vegan"}' | jq '.safe[] | {name, is_vegan}'
+```
+
+---
+
+## Production Deployment
+
+### Ubuntu 24.04 with Caddy + systemd
+
+1. Set system timezone and static IP (if applicable).
+2. Install Docker Engine + Compose plugin.
+3. Clone repo and populate `.env`:
+   ```bash
+   cat > .env <<EOF
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=<strong-password>
+   BASE_DOMAIN=<public-hostname-or-ip>
+   BOT_TOKEN=<from @BotFather>
+   LLM_API_KEY=<optional>
+   LLM_API_BASE_URL=https://api.example.com/v1
+   LLM_API_MODEL=qwen-coder
+   EOF
+   ```
+4. `docker compose up -d`
+5. Validate with the commands in the previous section.
+6. (Optional) Set up SSL certificates via Caddy by ensuring DNS A record resolves to the host; HTTPS is automatic.
+
+### Reverse-proxy note
+Port 80 is exposed by the `caddy` service. If you already run another web server, change `ports:` mapping for `caddy` to, e.g., `"127.0.0.1:8080:80"` and reverse-proxy from your chosen public entry.
+
+---
+
+## Environment Variables
+
+| Variable              | Scope   | Description                                       |
+|-----------------------|---------|---------------------------------------------------|
+| `POSTGRES_USER`       | Compose | DB superuser                                      |
+| `POSTGRES_PASSWORD`   | Compose | DB password                                       |
+| `BASE_DOMAIN`         | Compose | Public domain for Caddy certificates (optional)   |
+| `BOT_TOKEN`           | Bot     | Telegram bot token (required)                     |
+| `LMS_API_BASE_URL`    | Bot     | Override backend URL; defaults to `http://backend:8000` |
+| `LLM_API_KEY`         | Bot     | LLM provider key for intent extraction            |
+| `LLM_API_BASE_URL`    | Bot     | LLM provider base URL                             |
+| `LLM_API_MODEL`       | Bot     | Model name (default: `qwen-coder`)                |
+
+---
+
+## Troubleshooting
+
+- **Bot does not start:** Missing `BOT_TOKEN` in `bot/.env.bot`. Obtain one from [@BotFather](https://t.me/BotFather).
+- **No dishes appear in frontend:** Backend returns 200 but empty list — ensure seed data loaded: `docker compose exec postgres psql -U postgres -d restaurant -c "SELECT * FROM dish;"`. If empty, run `docker compose exec backend python -c "from app.database import init_db, async_engine; import asyncio; asyncio.run(init_db())"` (fewer steps in prod: data is loaded on first start).
+- **Port 80 already in use:** Change Caddy’s port mapping in `docker-compose.yml`.
+- **CORS errors in browser:** Add your origin to `BACKEND_CORS_ORIGINS` in `backend/.env` or set `CORS_ORIGINS` in compose.
+- **Caddy permissions errors on startup:** Ensure host folders have sufficient permissions. Alternatively set `RUN_AS=root` for Caddy for quick local testing (not recommended for production).
+
+---
+
+## API Reference
+
+| Endpoint          | Method   | Purpose                                          | Example Request                                                 |
+|-------------------|----------|--------------------------------------------------|-----------------------------------------------------------------|
+| `/`               | GET      | Customer UI                                      | `curl http://localhost:8000`                                    |
+| `/admin`          | GET      | Admin UI                                         | `curl http://localhost:8000/admin`                              |
+| `/api/dishes`     | GET      | List all dishes                                  | `curl http://localhost:8000/api/dishes`                         |
+| `/api/dishes`     | POST     | Create a dish                                    | `curl -X POST -H "Content-Type: application/json" -d '{"name":"Salmon","ingredients":"salmon, herbs, oil","allergens":"","is_vegan":false,"is_gluten_free":true}' http://localhost:8000/api/dishes` |
+| `/api/dishes/{id}`| PUT      | Update a dish                                    | `curl -X PUT -H "Content-Type: application/json" -d '{"is_vegan":true}' http://localhost:8000/api/dishes/1` |
+| `/api/dishes/{id}`| DELETE   | Delete a dish                                    | `curl -X DELETE http://localhost:8000/api/dishes/1`             |
+| `/api/check`      | POST     | Allergy/diet query → safe dishes                 | `curl -X POST -H "Content-Type: application/json" -d '{"message":"no milk"}' http://localhost:8000/api/check` |
+| `/docs`           | GET      | OpenAPI Swagger UI                                | `curl http://localhost:8000/docs`                               |
+| `/healthz`        | GET      | Liveness probe                                   | `curl http://localhost:8000/healthz`                            |
 
 ---
 
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
+
+---
+
+## Maintainers
+
+Restaurant Allergen Advisor project — adapted from the SE Toolkit Lab Assistant platform.

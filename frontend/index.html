@@ -3,10 +3,147 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Learning Management</title>
+    <title>Safe Dish Checker</title>
+    <link rel="stylesheet" href="/static/style-customer.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="container">
+        <header>
+            <h1>Find Your Safe Dishes</h1>
+            <p class="subtitle">Tell us your allergies or dietary preferences and we'll show you what's safe to eat.</p>
+        </header>
+
+        <!-- Search Input -->
+        <section class="search-section">
+            <form id="checkForm">
+                <div class="search-row">
+                    <textarea
+                        id="userMessage"
+                        placeholder="e.g. I'm allergic to milk and nuts, or show me vegan options…"
+                        required
+                    ></textarea>
+                    <button type="submit" class="btn btn-primary" id="searchBtn">
+                        Find Safe Dishes
+                    </button>
+                </div>
+            </form>
+
+            <!-- Quick filter chips -->
+            <div class="chips" id="chips">
+                <span class="chip" data-msg="I'm allergic to milk">No milk</span>
+                <span class="chip" data-msg="I'm allergic to nuts">No nuts</span>
+                <span class="chip" data-msg="I'm allergic to gluten">No gluten</span>
+                <span class="chip" data-msg="I'm allergic to soy">No soy</span>
+                <span class="chip" data-msg="What's vegan here?">Vegan only</span>
+                <span class="chip" data-msg="I want gluten-free dishes">Gluten-free</span>
+                <span class="chip" data-msg="Show me all dishes">Show all</span>
+            </div>
+        </section>
+
+        <!-- Results -->
+        <section class="results-section" id="resultsSection" style="display:none">
+            <h2 id="resultsHeading"></h2>
+            <p id="infoMsg" style="color:var(--text-light); margin-bottom:12px;"></p>
+            <div class="results-grid" id="resultsGrid"></div>
+            <p id="noResults" class="no-results" style="display:none">No dishes match your criteria.</p>
+        </section>
+    </div>
+
+    <script>
+    // -----------------------------------------------------------
+    // Client-side logic
+    // -----------------------------------------------------------
+
+    const userMessage = document.getElementById('userMessage');
+    const checkForm = document.getElementById('checkForm');
+    const chips = document.querySelectorAll('.chip');
+    const resultsSection = document.getElementById('resultsSection');
+    const resultsGrid = document.getElementById('resultsGrid');
+    const resultsHeading = document.getElementById('resultsHeading');
+    const infoMsg = document.getElementById('infoMsg');
+    const noResults = document.getElementById('noResults');
+    const searchBtn = document.getElementById('searchBtn');
+
+    function esc(str) {
+        const d = document.createElement('div');
+        d.textContent = str || '';
+        return d.innerHTML;
+    }
+
+    function clearResults() {
+        resultsGrid.innerHTML = '';
+        noResults.style.display = 'none';
+    }
+
+    async function doCheck(msg) {
+        clearResults();
+        resultsSection.style.display = 'block';
+        resultsHeading.textContent = 'Checking…';
+        infoMsg.textContent = '';
+        searchBtn.disabled = true;
+
+        try {
+            const res = await fetch('/api/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg }),
+            });
+            const data = await res.json();
+            renderResults(data);
+        } catch (err) {
+            resultsGrid.innerHTML = `<div class="error-card">Network error. Is the server running?</div>`;
+        } finally {
+            searchBtn.disabled = false;
+        }
+    }
+
+    checkForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const msg = userMessage.value.trim();
+        if (msg) doCheck(msg);
+    });
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const msg = chip.getAttribute('data-msg');
+            userMessage.value = msg;
+            doCheck(msg);
+        });
+    });
+
+    function renderResults(data) {
+        if (data.info) {
+            resultsHeading.textContent = data.info;
+            infoMsg.textContent = '';
+            return;
+        }
+
+        const safe = data.safe || [];
+        resultsHeading.textContent = `Safe Dishes for You (${safe.length} of ${data.total})`;
+
+        if (safe.length === 0) {
+            noResults.style.display = 'block';
+            return;
+        }
+
+        safe.forEach(dish => {
+            const card = document.createElement('div');
+            card.className = 'dish-card';
+            const tags = [];
+            if (dish.is_vegan) tags.push('<span class="tag vegan">Vegan</span>');
+            if (dish.is_gluten_free) tags.push('<span class="tag gf">Gluten-Free</span>');
+            const allergenHtml = dish.allergens && dish.allergens.trim()
+                ? `<span class="allergen-label">Contains:</span> ${esc(dish.allergens)}`
+                : `<span class="allergen-safe">No known allergens</span>`;
+            card.innerHTML = `
+                <h3>${esc(dish.name)}</h3>
+                <p class="ingredients">${esc(dish.ingredients)}</p>
+                <div class="tags">${tags.join(' ')}</div>
+                <p class="allergens">${allergenHtml}</p>
+            `;
+            resultsGrid.appendChild(card);
+        });
+    }
+    </script>
   </body>
 </html>

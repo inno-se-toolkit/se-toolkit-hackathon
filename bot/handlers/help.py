@@ -2,27 +2,16 @@
 
 from .base import HandlerContext, HandlerResult
 
-
 def handle_help(ctx: HandlerContext) -> HandlerResult:
-    """Handle the /help command.
-
-    Args:
-        ctx: Handler context with user information.
-
-    Returns:
-        HandlerResult with help message listing available commands.
-    """
-    message = (
-        "📖 *Available Commands*\n\n"
-        "• /start - Start the bot and see welcome message\n"
-        "• /help - Show this help message\n"
-        "• /health - Check system health status\n"
-        "• /labs - View available lab assignments\n"
-        "• /scores <lab_id> - Check your score for a specific lab\n\n"
-        "📝 *Examples:*\n"
-        "• /scores lab-04\n"
-        "• /scores lab-01\n\n"
-        "💡 You can also ask questions in natural language!"
+    msg = (
+        "MenuMate — Restaurant Allergen Assistant\n\n"
+        "Commands:\n"
+        "/start — Welcome message\n"
+        "/help — This help\n"
+        "/menu — Show all dishes\n"
+        "/check <query> — Find safe dishes (e.g. /check no milk, vegan)\n\n"
+        "Or just type a question in plain English, e.g.\n"
+        "  \"I'm allergic to nuts and gluten\"\n"
+        "  \"Show me vegan options\""
     )
-
-    return HandlerResult.ok(message)
+    return HandlerResult.ok(msg)

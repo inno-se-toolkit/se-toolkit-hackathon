@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dish Admin</title>
+    <link rel="stylesheet" href="/static/style-admin.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Restaurant Menu Admin</h1>
+        <button class="btn btn-add" onclick="showForm()">Add Dish</button>
+      </header>
+
+      <div id="formContainer" class="form-card" style="display:none">
+        <form id="dishForm">
+          <input type="hidden" id="dishId" />
+          <div class="form-row">
+            <div class="form-group">
+              <label>Name</label>
+              <input id="name" required />
+            </div>
+            <div class="form-group">
+              <label>Ingredients</label>
+              <input id="ingredients" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Allergens (comma separated)</label>
+              <input id="allergens" placeholder="milk, nuts, gluten, soy" />
+            </div>
+            <div class="checkbox">
+              <label><input type="checkbox" id="is_vegan"> Vegan</label>
+              <label><input type="checkbox" id="is_gluten_free"> Gluten-Free</label>
+            </div>
+          </div>
+          <div style="gap:8px; display:flex">
+            <button type="submit" class="btn btn-add">Save</button>
+            <button type="button" class="btn btn-del" onclick="hideForm()">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <table id="dishesTable">
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Ingredients</th><th>Allergens</th><th>Vegan</th><th>GF</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <p id="emptyMsg" class="empty" style="display:none">No dishes yet. Add one above.</p>
+    </div>
+
+    <script>
+    const API = '/api/dishes';
+    const tableBody = document.getElementById('tableBody');
+    const emptyMsg = document.getElementById('emptyMsg');
+    const formContainer = document.getElementById('formContainer');
+    const dishForm = document.getElementById('dishForm');
+    const dishId = document.getElementById('dishId');
+    const name = document.getElementById('name');
+    const ingredients = document.getElementById('ingredients');
+    const allergens = document.getElementById('allergens');
+    const is_vegan = document.getElementById('is_vegan');
+    const is_gluten_free = document.getElementById('is_gluten_free');
+
+    let csrf = ''; // CSRF not needed for API simplicity in this demo
+
+    async function load() {
+      const res = await fetch(API);
+      const dishes = await res.json();
+      tableBody.innerHTML = '';
+      if (dishes.length === 0) {
+        emptyMsg.style.display = 'block';
+        return;
+      }
+      emptyMsg.style.display = 'none';
+      dishes.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${d.id}</td>
+          <td>${d.name}</td>
+          <td>${d.ingredients}</td>
+          <td>${d.allergens}</td>
+          <td>${d.is_vegan ? 'Yes' : ''}</td>
+          <td>${d.is_gluten_free ? 'Yes' : ''}</td>
+          <td>
+            <button class="btn btn-edit" onclick='edit(${JSON.stringify(d)})'>Edit</button>
+            <button class="btn btn-del" onclick="del(${d.id})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function showForm() {
+      formContainer.style.display = 'block';
+      dishForm.reset();
+      dishId.value = '';
+    }
+    function hideForm() {
+      formContainer.style.display = 'none';
+    }
+
+    dishForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: name.value.trim(),
+        ingredients: ingredients.value.trim(),
+        allergens: allergens.value.trim(),
+        is_vegan: is_vegan.checked,
+        is_gluten_free: is_gluten_free.checked,
+      };
+      if (dishId.value) {
+        await fetch(`${API}/${dishId.value}`, {
+          method: 'PUT',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await fetch(API, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+      }
+      hideForm();
+      load();
+    });
+
+    window.edit = (d) => {
+      dishId.value = d.id;
+      name.value = d.name;
+      ingredients.value = d.ingredients;
+      allergens.value = d.allergens;
+      is_vegan.checked = d.is_vegan;
+      is_gluten_free.checked = d.is_gluten_free;
+      formContainer.style.display = 'block';
+    };
+
+    window.del = async (id) => {
+      if (!confirm('Delete this dish?')) return;
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      load();
+    };
+
+    load();
+    </script>
+  </body>
+</html>

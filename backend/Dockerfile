@@ -1,73 +1,40 @@
-# Adapted from https://github.com/astral-sh/uv-docker-example/blob/fa761744819c05f4ce207bde1f0a396f6be3915f/multistage.Dockerfile
-# Also see https://docs.astral.sh/uv/guides/integration/docker/
+# Backend — Restaurant Allergen Advisor API
 
-# ---
-# Stage 1: build the application in the `/app` directory.
-# ---
+# Build stage using uv (fast, reproducible)
+FROM python:3.14-slim AS builder
 
-ARG REGISTRY_PREFIX=harbor.pg.innopolis.university/docker-hub-cache/
-FROM ${REGISTRY_PREFIX}astral/uv:python3.14-bookworm-slim AS builder
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
-
-# Omit development dependencies
-ENV UV_NO_DEV=1
-
-# Disable Python downloads, because we want to use the system interpreter
-# across both images. If using a managed Python version, it needs to be
-# copied from the build image into the final image; see `standalone.Dockerfile`
-# for an example.
-ENV UV_PYTHON_DOWNLOADS=0
-
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && update-ca-certificates
-
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+# Install uv
+ENV UV_VERSION=0.6.8
+RUN pip install "uv==${UV_VERSION}"
 
 WORKDIR /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=backend/pyproject.toml,target=backend/pyproject.toml \
-    uv sync --frozen --no-install-project
-    
-    UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple uv sync --frozen --no-install-project --native-tls
 
-COPY backend /app/backend
-COPY pyproject.toml uv.lock /app/
+# Copy dependency files
+COPY backend/pyproject.toml ./
+# If a uv.lock exists at repo root, copy it too; otherwise uv will resolve
+COPY uv.lock* ./ 2>/dev/null || true
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen
+# Create venv and install deps
+RUN uv sync --no-dev --frozen || uv sync --no-dev
 
-# ---
-# Stage 2: use a final image without uv
-# ---
+# Copy application source
+COPY backend ./backend
 
-ARG REGISTRY_PREFIX=harbor.pg.innopolis.university/docker-hub-cache/
-FROM ${REGISTRY_PREFIX}python:3.14.2-slim-bookworm
-# It is important to use the image that matches the builder, as the path to the
-# Python executable must be the same, e.g., using `python:3.11-slim-bookworm`
-# will fail.
+# Final stage — slim runtime
+FROM python:3.14-slim
 
-# # Set environment variables for Python and application
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-# # Make sure we use UTF-8 encoding
-ENV LANG=C.UTF-8
+# Non-root user
+RUN groupadd --system --gid 999 appuser && useradd --system --gid 999 --uid 999 --create-home appuser
 
-# Setup a non-root user
-RUN groupadd --system --gid 999 nonroot \
-    && useradd --system --gid 999 --uid 999 --create-home nonroot
-
-# Copy the application from the builder
-COPY --from=builder --chown=nonroot:nonroot /app /app
-
-# Place executables in the environment at the front of the path
-ENV PATH="/app/.venv/bin:$PATH"
-
-# Use the non-root user to run our application
-USER nonroot
-
-# Use `/app` as the working directory
 WORKDIR /app
+COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+COPY --from=builder --chown=appuser:appuser /app/backend ./backend
 
-# Run the FastAPI application
-CMD ["sh", "-c", "python backend/app/run.py"]
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+USER appuser
+EXPOSE 8000
+
+CMD ["uv", "run", "backend/app/run.py"]

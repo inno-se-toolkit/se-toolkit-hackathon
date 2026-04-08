@@ -1,128 +1,52 @@
-"""Handler for natural language intent routing with LLM tool calling."""
+"""Natural language intent handler with LLM tool calling."""
 
 import logging
-from typing import Dict, List
-
-from services.llm_client import LLMClient, SYSTEM_PROMPT
+from typing import List, Dict
 from .base import HandlerContext, HandlerResult
+from bot.services.llm_client import LLMClient, SYSTEM_PROMPT
+from bot.services.backend_client import BackendClient
+from bot.config import load_config
 
 logger = logging.getLogger(__name__)
 
-
 async def handle_natural_language(ctx: HandlerContext) -> HandlerResult:
-    """Handle natural language queries using LLM with tool calling.
-
-    This is the main entry point for intent-based routing. The LLM receives
-    the user's message along with tool definitions, decides which tools to call,
-    and produces a final answer based on the tool results.
-
-    Args:
-        ctx: Handler context with user information and message.
-
-    Returns:
-        HandlerResult with the LLM's response.
-    """
-    from config import load_config
-
-    user_message = ctx.args or ""
-
+    user_message = (ctx.args or "").strip()
     if not user_message:
-        return HandlerResult.ok(
-            "I'm here to help! You can ask me about:\n"
-            "- Available labs and assignments\n"
-            "- Pass rates and scores\n"
-            "- Student performance and rankings\n"
-            "- Group comparisons\n\n"
-            "Try asking: 'what labs are available?' or 'show me scores for lab 4'"
-        )
+        return HandlerResult.ok("Tell me your allergies or dietary preferences and I'll find safe dishes.")
 
-    try:
-        config = load_config(require_bot_token=False)
+    config = load_config(require_bot_token=False)
 
-        # Check if LLM is configured
-        if not config.llm_api_key or not config.llm_api_base_url:
-            return _fallback_response(user_message)
+    # LLM path (if configured)
+    if config.llm_api_key and config.llm_api_base_url:
+        try:
+            llm = LLMClient(config.llm_api_key, config.llm_api_base_url, config.llm_api_model or "qwen-coder")
+            if await llm.health_check():
+                messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_message}]
+                response = await llm.chat_with_tools(messages)
+                if response and len(response.strip()) > 5:
+                    return HandlerResult.ok(response)
+        except Exception as e:
+            logger.exception("LLM call failed")
 
-        # Initialize LLM client
-        model = config.llm_api_model or "qwen-coder"
-        llm = LLMClient(config.llm_api_key, config.llm_api_base_url, model)
+    # Fallback: direct API check
+    if config.backend_api_url:
+        try:
+            client = BackendClient(config.backend_api_url, config.backend_api_key or "")
+            safe = await client.check_dishes_raw(user_message)
+            if safe:
+                lines = []
+                for d in safe:
+                    tags = []
+                    if d.get("is_vegan"): tags.append("Vegan")
+                    if d.get("is_gluten_free"): tags.append("GF")
+                    tagstr = f" [{', '.join(tags)}]" if tags else ""
+                    line = f"• {d['name']}{tagstr}: {d['ingredients']}"
+                    if d.get('allergens'): line += f"\n  Allergens: {d['allergens']}"
+                    lines.append(line)
+                return HandlerResult.ok("Safe dishes:\n" + "\n".join(lines))
+            return HandlerResult.ok("No safe dishes found for your request.")
+        except Exception as e:
+            logger.exception("API check failed")
+            return HandlerResult.ok(f"Could not check dishes: {e}")
 
-        # Check if LLM is healthy
-        if not await llm.health_check():
-            logger.warning("LLM health check failed, using fallback")
-            return _fallback_response(user_message)
-
-        # Prepare messages for the LLM
-        messages: List[Dict[str, str]] = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
-        ]
-
-        # Call LLM with tool support
-        response = await llm.chat_with_tools(messages)
-
-        if not response or len(response.strip()) < 10:
-            return _fallback_response(user_message)
-
-        return HandlerResult.ok(response)
-
-    except Exception as e:
-        logger.exception(f"LLM routing failed for: {user_message[:50]}...")
-        return _fallback_response(user_message)
-
-
-def _fallback_response(message: str) -> HandlerResult:
-    """Return a helpful fallback response when LLM is unavailable.
-
-    Args:
-        message: The user's original message.
-
-    Returns:
-        HandlerResult with a helpful fallback message.
-    """
-    message_lower = message.lower()
-
-    # Check for greetings
-    if any(kw in message_lower for kw in ["hello", "hi", "hey", "greetings"]):
-        return HandlerResult.ok(
-            "👋 Hello! I'm your SE Toolkit Lab Assistant.\n\n"
-            "I can help you with:\n"
-            "• Viewing available labs\n"
-            "• Checking pass rates and scores\n"
-            "• Finding top learners\n"
-            "• Comparing group performance\n\n"
-            "Try asking: 'what labs are available?'"
-        )
-
-    # Check for gibberish or very short messages
-    if len(message) < 3 or message_lower in ["asdf", "test", "abc"]:
-        return HandlerResult.ok(
-            "I'm not sure I understood that. Here's what I can help with:\n\n"
-            "• 'what labs are available?' - List all labs\n"
-            "• 'show me scores for lab 4' - View pass rates\n"
-            "• 'who are the top students?' - See leaderboard\n"
-            "• 'which group is best in lab 3?' - Compare groups\n\n"
-            "Or use commands like /help, /labs, /scores"
-        )
-
-    # Check for lab mentions without clear intent
-    if "lab" in message_lower:
-        return HandlerResult.ok(
-            f"I see you mentioned '{message}'. What would you like to know?\n\n"
-            "Try:\n"
-            "• 'show me scores for this lab'\n"
-            "• 'what's the pass rate?'\n"
-            "• 'who are the top students?'\n"
-            "• 'how many students completed it?'"
-        )
-
-    # Generic fallback
-    return HandlerResult.ok(
-        "I'm having trouble understanding. Here's what I can help with:\n\n"
-        "• 'what labs are available?' - List all labs\n"
-        "• 'show me scores for lab 4' - View pass rates\n"
-        "• 'who are the top 5 students?' - See leaderboard\n"
-        "• 'which group is best?' - Compare groups\n"
-        "• 'when are submissions due?' - Check timeline\n\n"
-        "Or use commands: /start, /help, /labs, /scores <lab_id>"
-    )
+    return HandlerResult.ok("Bot not fully configured (missing backend API or LLM keys).")

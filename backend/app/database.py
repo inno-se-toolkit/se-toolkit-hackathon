@@ -1,23 +1,31 @@
-"""Database connection management."""
+# Database engine and session
 
-from collections.abc import AsyncGenerator
+from sqlmodel import SQLModel, create_engine, Session
+from .settings import settings
 
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel.ext.asyncio.session import AsyncSession
+DATABASE_URL = settings.database_url or (
+    f"postgresql+asyncpg://{settings.postgres_user}:"
+    f"{settings.postgres_password}@{settings.postgres_host}:"
+    f"{settings.postgres_port}/{settings.postgres_db}"
+)
 
-from app.settings import settings
+# Async engine for FastAPI
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+async_engine = create_async_engine(
+    DATABASE_URL,
+    echo=settings.debug,
+    future=True,
+)
 
+# Sync engine for migrations/init if needed
+engine = create_engine(
+    DATABASE_URL.replace("asyncpg", "psycopg2"),
+    echo=settings.debug,
+)
 
-def get_database_url() -> str:
-    return (
-        f"postgresql+asyncpg://{settings.db_user}:{settings.db_password}"
-        f"@{settings.db_host}:{settings.db_port}/{settings.db_name}"
-    )
+def get_session() -> AsyncSession:
+    return AsyncSession(async_engine)
 
-
-engine = create_async_engine(get_database_url())
-
-
-async def get_session() -> AsyncGenerator[AsyncSession]:
-    async with AsyncSession(engine) as session:
-        yield session
+async def init_db():
+    async with async_engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)

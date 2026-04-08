@@ -1,20 +1,15 @@
-[project]
-name = "lms-backend"
+name = "restaurant-backend"
 version = "0.1.0"
-description = "LMS Backend API"
-requires-python = "==3.14.2"
+description = "Restaurant Allergen Advisor API"
+requires-python = ">=3.12,<3.15"
 dependencies = [
-  "asyncpg>=0.30.0",
-  "fastapi==0.128.7",
-  "httpx==0.28.1",
-  "pydantic==2.12.5",
-  "pydantic-settings==2.12.0",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
   "sqlmodel>=0.0.22",
-  "uvicorn[standard]==0.40.0",
+  "sqlalchemy[asyncio]>=2.0",
+  "asyncpg>=0.30",
+  "pydantic-settings>=2.0",
+  "httpx>=0.27",
 ]
-
 [dependency-groups]
-dev = [
-  "aiosqlite>=0.21.0",
-  "greenlet>=3.2.0",
-]
+dev = ["pytest>=8", "pytest-asyncio>=0.23"]

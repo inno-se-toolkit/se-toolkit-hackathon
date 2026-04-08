@@ -6,17 +6,16 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 # Copy project files
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml uv.lock* ./
 
-# Install dependencies using uv (allow minor version differences)
+# Install dependencies using uv
 RUN uv sync --no-dev
 
 # Copy bot source code
 COPY . .
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# Ensure handlers/__init__.py exists (implicit via copy)
 
-# Run the bot
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+
 CMD ["uv", "run", "bot.py"]

@@ -1,118 +1,96 @@
-services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-      args:
-        REGISTRY_PREFIX: ${REGISTRY_PREFIX:-harbor.pg.innopolis.university/docker-hub-cache/}
-    restart: unless-stopped
-    networks:
-      - lms-network
-    ports:
-      - ${BACKEND_HOST_ADDRESS:?'BACKEND_HOST_ADDRESS is required'}:${BACKEND_HOST_PORT:?'BACKEND_HOST_PORT is required'}:${BACKEND_CONTAINER_PORT}
-    expose:
-      - ${BACKEND_CONTAINER_PORT}
-    environment:
-      - NAME=${BACKEND_NAME:?'BACKEND_NAME is required'}
-      - DEBUG=${BACKEND_DEBUG:?'BACKEND_DEBUG is required'}
-      - ADDRESS=${BACKEND_CONTAINER_ADDRESS:?'BACKEND_CONTAINER_ADDRESS is required'}
-      - PORT=${BACKEND_CONTAINER_PORT:?'BACKEND_CONTAINER_PORT is required'}
-      - LMS_API_KEY=${LMS_API_KEY:?'LMS_API_KEY is required'}
-      - BACKEND_ENABLE_INTERACTIONS=${BACKEND_ENABLE_INTERACTIONS:?'BACKEND_ENABLE_INTERACTIONS is required'}
-      - BACKEND_ENABLE_LEARNERS=${BACKEND_ENABLE_LEARNERS:?'BACKEND_ENABLE_LEARNERS is required'}
-      - AUTOCHECKER_API_URL=${AUTOCHECKER_API_URL:?'AUTOCHECKER_API_URL is required'}
-      - AUTOCHECKER_API_LOGIN=${AUTOCHECKER_API_LOGIN:?'AUTOCHECKER_API_LOGIN is required'}
-      - AUTOCHECKER_API_PASSWORD=${AUTOCHECKER_API_PASSWORD:?'AUTOCHECKER_API_PASSWORD is required'}
-      - DB_HOST=${CONST_POSTGRESQL_SERVICE_NAME:?'CONST_POSTGRESQL_SERVICE_NAME is required'}
-      - DB_PORT=${CONST_POSTGRESQL_DEFAULT_PORT:?'CONST_POSTGRESQL_DEFAULT_PORT is required'}
-      - DB_NAME=${POSTGRES_DB:?'POSTGRES_DB is required'}
-      - DB_USER=${POSTGRES_USER:?'POSTGRES_USER is required'}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:?'POSTGRES_PASSWORD is required'}
-    depends_on:
-      postgres:
-        condition: service_healthy
+version: "3.9"
 
+volumes:
+  postgres_data:
+  pgadmin_data:
+  caddy_data:
+  caddy_config:
+
+services:
   postgres:
-    image: ${REGISTRY_PREFIX:-harbor.pg.innopolis.university/docker-hub-cache/}postgres:18.3-alpine
+    image: postgres:17-alpine
     restart: unless-stopped
-    networks:
-      - lms-network
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:?'POSTGRES_DB is required'}
-      - POSTGRES_USER=${POSTGRES_USER:?'POSTGRES_USER is required'}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?'POSTGRES_PASSWORD is required'}
-    ports:
-      - ${POSTGRES_HOST_ADDRESS:?'POSTGRES_HOST_ADDRESS is required'}:${POSTGRES_HOST_PORT:?'POSTGRES_HOST_PORT is required'}:${CONST_POSTGRESQL_DEFAULT_PORT:?'CONST_POSTGRESQL_DEFAULT_PORT is required'}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: restaurant
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/app/data/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "127.0.0.1:5432:5432"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:?'POSTGRES_USER is required'} -d ${POSTGRES_DB:?'POSTGRES_DB is required'}",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  pgadmin:
-    image: ${REGISTRY_PREFIX:-harbor.pg.innopolis.university/docker-hub-cache/}dpage/pgadmin4:latest
+  backend:
+    build:
+      context: ./backend
+    image: se-toolkit-hackathon/backend:develop
     restart: unless-stopped
-    networks:
-      - lms-network
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:?'PGADMIN_EMAIL is required'}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:?'PGADMIN_PASSWORD is required'}
-      - SCRIPT_NAME=/utils/pgadmin
-    ports:
-      - ${PGADMIN_HOST_ADDRESS:?'PGADMIN_HOST_ADDRESS is required'}:${PGADMIN_HOST_PORT:?'PGADMIN_HOST_PORT is required'}:80
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: restaurant
+      CORS_ORIGINS: http://127.0.0.1:8000,http://127.0.0.1:8080,http://10.93.26.29:8000
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/restaurant
+    volumes:
+      - ./frontend:/srv:ro
+    ports:
+      - "127.0.0.1:8080:8000"
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - pgadmin_config:/etc/pgadmin
+    ports:
+      - "127.0.0.1:8085:80"
+    depends_on:
+      - postgres
 
   caddy:
     build:
-      context: frontend/
-      args:
-        REGISTRY_PREFIX: ${REGISTRY_PREFIX:-harbor.pg.innopolis.university/docker-hub-cache/}
-    networks:
-      - lms-network
+      context: ./infra/caddy
+    image: se-toolkit-hackathon/caddy:develop
+    restart: unless-stopped
     depends_on:
       - backend
-    environment:
-      - CADDY_CONTAINER_PORT=${CADDY_CONTAINER_PORT:?'CADDY_CONTAINER_PORT is required'}
-      - BACKEND_CONTAINER_PORT=${BACKEND_CONTAINER_PORT:?'BACKEND_CONTAINER_PORT is required'}
-      - QWEN_CODE_API_URL=${QWEN_CODE_API_URL:?'QWEN_CODE_API_URL is required'}
-    ports:
-      - ${LMS_API_HOST_ADDRESS:?'LMS_API_HOST_ADDRESS is required'}:${LMS_API_HOST_PORT:?'LMS_API_HOST_PORT is required'}:${CADDY_CONTAINER_PORT}
     volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./frontend:/srv:ro
+    ports:
+      - "80:80"
+      - "443:443"
+      - "127.0.0.1:8000:80"
+    environment:
+      BASE_DOMAIN: ${BASE_DOMAIN:-localhost}
+      BACKEND_INTERNAL: backend:8000
 
   bot:
     build:
       context: ./bot
-      dockerfile: Dockerfile
+      args:
+        REGISTRY_PREFIX: ""
+    image: se-toolkit-hackathon/bot:develop
     restart: unless-stopped
-    networks:
-      - lms-network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    environment:
-      - BOT_TOKEN=${BOT_TOKEN:?'BOT_TOKEN is required'}
-      - LMS_API_BASE_URL=http://backend:8000
-      - LMS_API_KEY=${LMS_API_KEY:?'LMS_API_KEY is required'}
-      - LLM_API_KEY=${LLM_API_KEY:?'LLM_API_KEY is required'}
-      - LLM_API_BASE_URL=${LLM_API_BASE_URL:?'LLM_API_BASE_URL is required'}
-      - LLM_API_MODEL=${LLM_API_MODEL:-coder-model}
-      - TELEGRAM_PROXY_URL=${TELEGRAM_PROXY_URL:-}
     depends_on:
       - backend
-
-volumes:
-  postgres_data:
-
-networks:
-  lms-network:
-    name: lms-network
-    attachable: true
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      LMS_API_BASE_URL: http://backend:8000
+      LMS_API_KEY: supersecret
+      LLM_API_KEY: ${LLM_API_KEY}
+      LLM_API_BASE_URL: ${LLM_API_BASE_URL}
+      LLM_API_MODEL: ${LLM_API_MODEL:-qwen-coder}

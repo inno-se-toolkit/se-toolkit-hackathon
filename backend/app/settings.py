@@ -1,43 +1,21 @@
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+# Backend settings via pydantic-settings
 
+from pydantic_settings import BaseSettings
+from typing import Optional
 
 class Settings(BaseSettings):
-    # Environment variables
+    app_name: str = "Restaurant Allergen Advisor"
+    debug: bool = False
+    cors_origins: list[str] = ["*"]
 
-    app_name: str = Field(default="Learning Management Service", alias="NAME")
-    debug: bool = Field(default=False, alias="DEBUG")
-    address: str = Field(default="127.0.0.1", alias="ADDRESS")
-    port: int = Field(default=8000, alias="PORT")
-    reload: bool = Field(default=False, alias="RELOAD")
+    # Database
+    postgres_user: str = "postgres"
+    postgres_password: str = "postgres"
+    postgres_db: str = "restaurant"
+    postgres_host: str = "postgres"
+    postgres_port: int = 5432
+    database_url: Optional[str] = None
 
-    api_key: str = Field(alias="LMS_API_KEY")
+    model_config = {"env_file": ".env"}
 
-    cors_origins: list[str] = Field(default=[], alias="CORS_ORIGINS")
-
-    enable_interactions: bool = Field(
-        default=False, alias="BACKEND_ENABLE_INTERACTIONS"
-    )
-    enable_learners: bool = Field(default=False, alias="BACKEND_ENABLE_LEARNERS")
-
-    autochecker_api_url: str = Field(
-        default="https://auche.namaz.live", alias="AUTOCHECKER_API_URL"
-    )
-    autochecker_email: str = Field(default="", alias="AUTOCHECKER_API_LOGIN")
-    autochecker_password: str = Field(default="", alias="AUTOCHECKER_API_PASSWORD")
-
-    db_host: str = Field(default="localhost", alias="DB_HOST")
-    db_port: int = Field(default=5432, alias="DB_PORT")
-    db_name: str = Field(default="lab-7", alias="DB_NAME")
-    db_user: str = Field(default="postgres", alias="DB_USER")
-    db_password: str = Field(default="postgres", alias="DB_PASSWORD")
-
-    model_config = SettingsConfigDict(
-        env_file=".env.secret",
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="allow",
-    )
-
-
-settings = Settings.model_validate({})
+settings = Settings()

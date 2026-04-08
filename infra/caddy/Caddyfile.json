@@ -1,0 +1,42 @@
+{
+  "admin": { "disabled": true },
+  "logging": {
+    "logs": {
+      "default": { "level": "INFO" }
+    }
+  },
+  "apps": {
+    "http": {
+      "servers": {
+        "srv0": {
+          "listen": [":80", ":443"],
+          "routes": [
+            {
+              "match": [{ "path": ["/api/*"] }],
+              "handle": [
+                {
+                  "handler": "reverse_proxy",
+                  "upstreams": [{ "dial": "backend:8000" }],
+                  "headers": {
+                    "request": {
+                      "set": { "Host": ["{http.request.host}"] }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "handle": [
+                {
+                  "handler": "file_server",
+                  "root": "/srv",
+                  "browse": { "enable": true }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
