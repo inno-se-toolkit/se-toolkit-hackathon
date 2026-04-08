@@ -1,170 +1,283 @@
-# Lab 9 - Quiz and Hackathon
+# 📊 Grade Calculator — Version 2
 
-The lab opens with a quiz and then kicks off the hackathon.
+A simple web app that calculates final grades, determine letter grades, and tell you **what grade you need to hit your target**. Each course can define its own grading scale.
 
-To get the full point for the lab, you need to:
+**Version 2** — Everything from V1, plus:
+- 🎯 **"What do I need to pass?"** — Enter a target grade, see what you need on remaining work
+- 🔤 **Letter grading system** — A / B / C / D / F per course
+- 📝 **Course-specific grading scales** — Each course defines its own A/B/C/D thresholds
+- 💾 **Save / Load / Delete courses** — SQLite persistence
+- ✨ **Improved UI** — Tabs, course list, toast notifications
 
-- Pass Tasks 1, 2, 3 during the lab AND
-- Finish Tasks 4 and 5 by the usual deadline of Thursday 23:59.
+---
 
-Each student builds their own project:
+## 🚀 How to Run
 
-- Go from an idea to a deployed product.
-- Use agents and LLMs throughout.
+### 1. Install dependencies
 
-----
+```bash
+pip install -r requirements.txt
+```
 
-## Task 1 (graded by TA after the lab)
+### 2. Start the server
 
-Pen and paper quiz:
+```bash
+uvicorn main:app --reload
+```
 
-- 20 mins;
-- closed book, no devices;
-- you get 3 random questions from the question bank;
-- answer at least 2.
+### 3. Open in browser
 
-## Task 2 (approved by TA during the lab)
+**http://localhost:8000**
 
-Ideate and plan your project.
+---
 
-### Project idea
+## 📁 Project Structure
 
-The project idea must be:
+```
+se-toolkit-hackathon/
+├── main.py              # FastAPI backend (all endpoints + DB logic)
+├── models.py            # Pydantic models (V1 + V2)
+├── requirements.txt     # Python dependencies
+├── grades.db            # SQLite database (auto-created)
+├── test_v2.py           # Smoke tests
+└── static/
+    └── index.html       # Frontend (HTML + CSS + JS)
+```
 
-- something simple to build;
-- clearly useful;
-- easy to explain.
+---
 
-Define and show to your TA:
+## 🔌 API Endpoints
 
-- End-user of the product
-- What problem your product solves for the end-user?
-- The product idea in one short sentence.
-- What is the product's core feature?
+### V1 (unchanged)
 
-### Implementation plan
+#### `POST /calculate`
 
-When the idea is approved, produce a plan for two product versions.
+Calculate the final weighted grade.
 
-Version 1 does one core thing well:
+**Request:**
+```json
+{
+    "entries": [
+        {"name": "Homework", "grade": 80, "weight": 20},
+        {"name": "Midterm", "grade": 70, "weight": 30},
+        {"name": "Final Exam", "grade": 90, "weight": 50}
+    ]
+}
+```
 
-- Pick the one feature most valuable to the end-user and relatively easy to implement;
-- It is a functioning product, not a prototype;
-- Must be shown to the TA upon completion for feedback.
+**Response:**
+```json
+{
+    "final_grade": 82.0,
+    "total_weight": 100.0,
+    "status": "Pass",
+    "message": "Congratulations! You passed."
+}
+```
 
-Version 2 builds upon Version 1:
+---
 
-- Improves the initial feature or adds another one on top;
-- Address TA feedback from the lab;
-- Deploy and make it available for use.
+### V2 — Enhanced Calculation
 
-The product must have the following components, each fulfilling a useful function:
+#### `POST /calculate/v2`
 
-- backend;
-- database;
-- end-user-facing client: web app, mobile app, or LLM-powered agent, e.g. `nanobot`.
+Calculate with letter grade, custom grading scale, and "what do I need?" analysis.
 
-Note:
+**Request:**
+```json
+{
+    "entries": [
+        {"name": "Midterm", "grade": 75, "weight": 40},
+        {"name": "Final", "grade": 85, "weight": 60}
+    ],
+    "target_grade": 80.0,
+    "thresholds": {
+        "a": 90,
+        "b": 80,
+        "c": 70,
+        "d": 60
+    }
+}
+```
 
-- You can use the setup from Lab 8 or start from scratch.
-- `Telegram` bots are blocked on university VMs.
+**Response:**
+```json
+{
+    "final_grade": 81.0,
+    "letter_grade": "B",
+    "total_weight": 100.0,
+    "status": "Pass",
+    "message": "Congratulations! You passed.",
+    "required_for_target": 86.67,
+    "thresholds_used": {
+        "a": 90.0,
+        "b": 80.0,
+        "c": 70.0,
+        "d": 60.0
+    }
+}
+```
 
-## Task 3 (approved by TA during the lab)
+| Field | Description |
+|-------|-------------|
+| `final_grade` | Calculated weighted grade |
+| `letter_grade` | A, B, C, D, or F based on thresholds |
+| `required_for_target` | Grade needed on remaining weight to hit target (null if no target set) |
+| `thresholds_used` | The grading scale that was applied |
 
-Implement Version 1 outlined in the plan:
+---
 
-- Build one core feature;
-- Follow best practices and git workflow;
-- Test it yourself and fix bugs;
-- Have the TA try it as a user;
-- Take note of the TA feedback;
-- Get TA's approval for the task to be marked as DONE.
+### V2 — Course CRUD
 
-## Task 4
+#### `POST /courses` — Save a course
 
-Implement and deploy Version 2 outlined in the plan:
+**Request:**
+```json
+{
+    "name": "CS101 - Intro to Programming",
+    "entries": [
+        {"name": "Homework", "grade": 85, "weight": 20},
+        {"name": "Midterm", "grade": 78, "weight": 30},
+        {"name": "Final", "grade": 92, "weight": 50}
+    ],
+    "thresholds": {
+        "a": 90,
+        "b": 80,
+        "c": 70,
+        "d": 60
+    }
+}
+```
 
-- Build and polish functionality;
-- Take TA feedback into account;
-- Push all code to the GitHub repo (see the detailed instructions below);
-- Follow best practices and git workflow;
-- Document your solution;
-- Dockerize all services;
-- Deploy it to be accessible to use.
+**Response (201):**
+```json
+{
+    "id": 1,
+    "name": "CS101 - Intro to Programming",
+    "entries": [ ... ],
+    "thresholds": { "a": 90.0, "b": 80.0, "c": 70.0, "d": 60.0 },
+    "final_grade": 86.4,
+    "letter_grade": "B"
+}
+```
 
-Version 2 can be completed during the lab or after it, before the usual deadline.
+#### `GET /courses` — List all courses
 
-## Task 5 (demo and PDF submitted through Moodle)
+**Response:**
+```json
+{
+    "courses": [
+        {
+            "id": 1,
+            "name": "CS101 - Intro to Programming",
+            "entries": [ ... ],
+            "thresholds": { ... },
+            "final_grade": 86.4,
+            "letter_grade": "B"
+        }
+    ]
+}
+```
 
-Submit a presentation with five slides:
+#### `GET /courses/{id}` — Get one course
 
-1. Title:
+**Response:** Same structure as a single course in the list above.
 
-   - Product title
-   - Your name
-   - Your university email
-   - Your group
+**404 if not found:**
+```json
+{
+    "detail": "Course not found."
+}
+```
 
-2. Context:
+#### `DELETE /courses/{id}` — Delete a course
 
-   - End-user of the product
-   - What problem your product solves
-   - The product idea in one short sentence
+**Response:**
+```json
+{
+    "message": "Course deleted successfully."
+}
+```
 
-3. Implementation:
+---
 
-   - How you built the product
-   - What went into Version 1 and Version 2
-   - What TA feedback points you addressed
+## 🧮 Calculations
 
-4. Demo:
+### Weighted Final Grade
+```
+final_grade = Σ(grade × weight) / Σ(weight)
+```
 
-   - Pre-recorded video demonstration of Version 2 with voice-over (no longer than 2 minutes).
-   - _Note:_ **This is the most important part of the presentation**.
+### Letter Grade
+Based on per-course thresholds:
+- **A** if grade ≥ threshold_a
+- **B** if grade ≥ threshold_b
+- **C** if grade ≥ threshold_c
+- **D** if grade ≥ threshold_d
+- **F** if grade < threshold_d
 
-5. Links:
+### Required Grade for Target
+```
+required = (target × 100 - current_weighted_sum) / remaining_weight
+```
+- If result > 100 → target is impossible with remaining weight
+- If result < 0 → target is already exceeded
 
-   - Link and QR code for each of these:
-     - The GitHub repo with the product code
-     - Deployed product (latest version)
+---
 
-----
+## 🖥 Frontend Features
 
-## Publishing the product code on GitHub
+| Feature | Description |
+|---------|-------------|
+| **Calculator tab** | Enter grades, weights, set target, set grading scale, calculate |
+| **Saved Courses tab** | View, load, and delete saved courses |
+| **Target grade input** | Optional — shows required grade on remaining components |
+| **Grading scale inputs** | Custom A/B/C/D thresholds per course |
+| **Toast notifications** | Success/error feedback for all actions |
+| **Responsive design** | Works on mobile and desktop |
 
-- Publish the product code in a repository on `GitHub`.
+---
 
-  The repository must be called `se-toolkit-hackathon`.
+## 🛠 Tech Stack
 
-- Add the MIT license file to make your product open-source.
+- **Backend:** Python FastAPI
+- **Database:** SQLite (auto-created as `grades.db`)
+- **Frontend:** Vanilla HTML + CSS + JavaScript (no frameworks)
+- **Validation:** Pydantic models
 
-- Add `README.md` in the product repository.
+---
 
-  `README.md` structure:
+## 🧪 Running Tests
 
-  - Product name (as title)
+```bash
+python test_v2.py
+```
 
-  - One-line description
+Tests cover:
+1. Weighted grade calculation
+2. Letter grade (default thresholds)
+3. Letter grade (custom thresholds)
+4. Required grade for target
+5. Impossible target detection
+6. Database course creation
+7. Database course loading
+8. Database course listing
+9. Database course deletion
+10. V1 backward compatibility
+11. V2 model validation
+12. Frontend HTML serving
 
-  - Demo:
-    - A couple of relevant screenshots of the product
+---
 
-  - Product context:
+## 📋 Version Comparison
 
-    - End users
-    - Problem that your product solves for end users
-    - Your solution
-
-  - Features:
-
-    - Implemented and not yet implemented features
-
-  - Usage:
-
-    - Explain how to use your product
-
-  - Deployment:
-
-    - Which OS the VM should run on (you may assume `Ubuntu 24.04` like on your university VMs)
-    - What should be installed on the VM
-    - Step-by-step deployment instructions
+| Feature | V1 | V2 |
+|---------|----|----|
+| Calculate final grade | ✅ | ✅ |
+| Letter grade (A-F) | ❌ | ✅ |
+| Custom grading scale per course | ❌ | ✅ |
+| Target grade / "What do I need?" | ❌ | ✅ |
+| Save courses to database | ❌ | ✅ |
+| Load saved courses | ❌ | ✅ |
+| Delete courses | ❌ | ✅ |
+| Course management UI | ❌ | ✅ |
