@@ -255,6 +255,42 @@ function parseResponse(response) {
   });
 }
 
+function getErrorMessage(data, fallback) {
+  if (!data) return fallback;
+
+  if (typeof data === "string") return data;
+
+  if (typeof data.detail === "string") return data.detail;
+
+  if (Array.isArray(data.detail)) {
+    return data.detail
+      .map((item) => {
+        if (typeof item === "string") return item;
+        if (item?.msg && item?.loc) {
+          const where = Array.isArray(item.loc) ? item.loc.join(" -> ") : String(item.loc);
+          return `${where}: ${item.msg}`;
+        }
+        if (item?.msg) return item.msg;
+        return JSON.stringify(item);
+      })
+      .join("; ");
+  }
+
+  if (typeof data.detail === "object") {
+    try {
+      return JSON.stringify(data.detail);
+    } catch {
+      return fallback;
+    }
+  }
+
+  try {
+    return JSON.stringify(data);
+  } catch {
+    return fallback;
+  }
+}
+
 function translateValue(lang, value, map) {
   if (lang === "ru") return value;
   return map[value] || value;
@@ -433,7 +469,7 @@ export default function App() {
       });
 
       const data = await parseResponse(response);
-      if (!response.ok) throw new Error(data.detail || t.invalid);
+      if (!response.ok) throw new Error(getErrorMessage(data, t.invalid));
 
       setToken(data.access_token);
       setCurrentUser(data.user);
@@ -559,7 +595,7 @@ export default function App() {
       });
 
       const data = await parseResponse(response);
-      if (!response.ok) throw new Error(data.detail || t.invalid);
+      if (!response.ok) throw new Error(getErrorMessage(data, t.invalid));
       setResult(data);
       setActiveTab("main");
       await refreshPrivateData();
@@ -576,7 +612,7 @@ export default function App() {
     try {
       const response = await authedFetch(`/api/meal-plans/${mealPlanId}`);
       const data = await parseResponse(response);
-      if (!response.ok) throw new Error(data.detail || t.invalid);
+      if (!response.ok) throw new Error(getErrorMessage(data, t.invalid));
       setResult(data);
       setActiveTab(targetTab);
     } catch (err) {
@@ -597,7 +633,7 @@ export default function App() {
         body: JSON.stringify({ is_favorite: !result.is_favorite }),
       });
       const data = await parseResponse(response);
-      if (!response.ok) throw new Error(data.detail || t.invalid);
+      if (!response.ok) throw new Error(getErrorMessage(data, t.invalid));
       setResult((current) => ({ ...current, is_favorite: data.is_favorite }));
       await refreshPrivateData();
     } catch (err) {
@@ -616,7 +652,7 @@ export default function App() {
         method: "POST",
       });
       const data = await parseResponse(response);
-      if (!response.ok) throw new Error(data.detail || t.invalid);
+      if (!response.ok) throw new Error(getErrorMessage(data, t.invalid));
       setResult(data);
       await refreshPrivateData();
     } catch (err) {
@@ -637,7 +673,7 @@ export default function App() {
         body: JSON.stringify({ batch_number: batchNumber }),
       });
       const data = await parseResponse(response);
-      if (!response.ok) throw new Error(data.detail || t.invalid);
+      if (!response.ok) throw new Error(getErrorMessage(data, t.invalid));
       setResult(data);
       await refreshPrivateData();
     } catch (err) {
