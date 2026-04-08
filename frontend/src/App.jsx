@@ -862,14 +862,11 @@ export default function App() {
     return (
       <div className="auth-page">
         <div className="auth-topbar">
-          <div className="lang-switch">
-            <span className={lang === "en" ? "lang-label active" : "lang-label"}>🇬🇧 EN</span>
-            <label className="switch">
-              <input type="checkbox" checked={lang === "ru"} onChange={toggleLang} />
-              <span className="switch-slider"></span>
-            </label>
-            <span className={lang === "ru" ? "lang-label active" : "lang-label"}>🇷🇺 RU</span>
-          </div>
+          <button type="button" className="lang-toggle-pill" onClick={toggleLang} aria-label="Toggle language">
+            <span className={lang === "en" ? "lang-pill-option active" : "lang-pill-option"}>EN</span>
+            <span className={lang === "ru" ? "lang-pill-option active" : "lang-pill-option"}>RU</span>
+            <span className={lang === "ru" ? "lang-pill-thumb right" : "lang-pill-thumb"}></span>
+          </button>
         </div>
         <div className="auth-card">
           <div className="auth-brand">
@@ -926,14 +923,11 @@ export default function App() {
         </div>
 
         <div className="topbar-actions">
-          <div className="lang-switch">
-            <span className={lang === "en" ? "lang-label active" : "lang-label"}>🇬🇧 EN</span>
-            <label className="switch">
-              <input type="checkbox" checked={lang === "ru"} onChange={toggleLang} />
-              <span className="switch-slider"></span>
-            </label>
-            <span className={lang === "ru" ? "lang-label active" : "lang-label"}>🇷🇺 RU</span>
-          </div>
+          <button type="button" className="lang-toggle-pill" onClick={toggleLang} aria-label="Toggle language">
+            <span className={lang === "en" ? "lang-pill-option active" : "lang-pill-option"}>EN</span>
+            <span className={lang === "ru" ? "lang-pill-option active" : "lang-pill-option"}>RU</span>
+            <span className={lang === "ru" ? "lang-pill-thumb right" : "lang-pill-thumb"}></span>
+          </button>
           <button onClick={logout}>{t.logout}</button>
         </div>
       </div>

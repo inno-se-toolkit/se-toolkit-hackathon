@@ -418,3 +418,48 @@ button:disabled {
 .switch input:checked + .switch-slider::before {
   transform: translateX(22px);
 }
+
+.lang-toggle-pill {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  width: 92px;
+  height: 40px;
+  padding: 4px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #111827;
+  overflow: hidden;
+}
+
+.lang-pill-option {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+  user-select: none;
+}
+
+.lang-pill-option.active {
+  color: #111827;
+}
+
+.lang-pill-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: 30px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+  transition: transform 0.2s ease;
+}
+
+.lang-pill-thumb.right {
+  transform: translateX(42px);
+}
