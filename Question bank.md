@@ -1,93 +1,207 @@
-# SE Toolkit — Theory Quiz: Question Bank
+Блок 1. Темперамент (12 вопросов)
+Я часто действую импульсивно, не обдумывая последствия.
 
-## Git & Workflow
+Мне легко переключиться с одного дела на другое.
 
-**Q1.** Describe the Git workflow we followed during the labs from start to finish. Explain what happens at each stage.
+В спокойной обстановке я чувствую себя комфортнее, чем в хаосе.
 
-> Expect: issue, branch, commit, pull request, review, merge.
+Я глубоко и долго переживаю даже незначительные события.
 
-**Q2.** You and a teammate both edited the same line in `README.md` on separate branches. What will this lead to? Describe step-by-step how you resolve it.
+Я быстро выхожу из себя, но также быстро отхожу.
 
-**Q3.** What is a conventional commit message? Give an example of a correct conventional commit for a bug fix to the /items endpoint.
+Новые люди и ситуации меня скорее бодрят, чем пугают.
 
----
+Я предпочитаю размеренный темп жизни и не люблю спешку.
 
-## HTTP & REST API
+Я часто замечаю у себя тревогу или беспокойство без явной причины.
 
-**Q4.** Describe the main parts of an HTTP request and an HTTP response.
+Мои эмоции яркие, но обычно быстро проходят.
 
-> Expect: method, path, query parameters, headers, body, status code, and response body.
+Мне трудно долго удерживать высокий темп работы — я выдыхаюсь.
 
-**Q5.** A client calls an API and receives HTTP 200, 401, 403, 404, 500, 502. Explain what each status code usually means, and what kind of problem (if any) you would suspect first in each case.
+Я стабилен в своих симпатиях и антипатиях, меня трудно переубедить.
 
-**Q6.** You open Swagger UI for an unfamiliar API. What specific information can you extract from it about a specific endpoint?
+Даже при сильном стрессе я сохраняю внешнее спокойствие.
 
-> Expect: endpoints, methods, parameters, authentication, request/response bodies and formats; Swagger acts as a live, testable contract that both sides agree on.
+Блок 2. Характер (13 вопросов)
+В компании незнакомцев я чувствую себя легко и свободно.
 
-**Q7.** What is the relationship between a database schema, a model object, and business logic?
+Если я принял решение, меня трудно сбить с пути.
 
----
+Я часто замечаю свои раздражение или недовольство другими.
 
-## Security & Authentication
+Я всегда стараюсь говорить правду, даже если это неприятно.
 
-**Q8.** Compare API-key authentication and username/password authentication. How does each work, what is each commonly used for, and what are the main tradeoffs?
+Я могу жёстко потребовать дисциплины от себя и других.
 
-**Q9.** Explain the difference between *authentication* and *authorization*. 
+Я получаю удовольствие, помогая другим безвозмездно.
 
-**Q10.** You SSH into your VM and need to harden it. Name at least four security measures you would apply and explain why each matters.
+Мне трудно отказать в просьбе, даже если она мне неудобна.
 
-> Expect: firewall rules, fail2ban, disabling root SSH login, and disabling password authentication.
+В споре я скорее уступлю, чем буду доказывать свою правоту.
 
----
+Я несу ответственность за свои ошибки, а не ищу виноватых.
 
-## Docker & Deployment
+Меня легко обидеть неосторожным словом.
 
-**Q11.** What is Docker, and how is running an application with Docker different from running it directly with `uv` in a local Python environment?
+Я предпочитаю тщательно планировать дела, а не действовать спонтанно.
 
-**Q12.** Explain the difference between a `Dockerfile` and a `docker-compose.yml` file. What problem does each solve, and how do they relate to each other?
+Я часто выступаю инициатором общения в новой группе.
 
-**Q13.** How does Docker layer caching work in principle, and why can Dockerfile order make rebuilds slow?
+Я способен сдерживать гнев, даже когда меня провоцируют.
 
-**Q14.** What is Docker build context, and how can a bad build context make images larger or builds slower?
+Блок 3. Ценности и убеждения (12 вопросов)
+Семья для меня важнее карьерных достижений.
 
----
+Я готов много работать ради высокого статуса и признания.
 
-## Testing
+Честность — это качество, которому я не изменяю ни при каких обстоятельствах.
 
-**Q15.** What is the difference between a *unit test* and an *end-to-end (E2E) test*? Describe what kinds of bugs each is designed to catch. Give one advantage and one disadvantage of each.
+Для меня важно постоянно развиваться духовно (медитация, чтение, саморефлексия).
 
-**Q16.** Define *boundary-value analysis*. For a function `get_grade(score: int)` that returns "F" for 0–49, "C" for 50–74, "B" for 75–89, and "A" for 90–100, list the specific boundary values you would test.
+Материальный комфорт и стабильность — мои главные приоритеты.
 
----
+Я ценю свободу выбора выше, чем безопасность.
 
-## Data Pipelines
+Для меня важно быть частью сообщества единомышленников.
 
-**Q17.** Explain what an *ETL pipeline* is (what each letter stands for and means). In the context of syncing data from an external API to a local PostgreSQL database, give a concrete example of what happens in each stage.
+Я считаю, что успех измеряется не деньгами, а вкладом в общее благо.
 
----
+Здоровый образ жизни для меня — не просто слова, а ежедневная практика.
 
-## LLM Agents & Tool Use
+Я уважаю чужие убеждения, даже если они радикально отличаются от моих.
 
-**Q18.** Describe the agentic loop step by step, from user input to final answer. Include what happens when the LLM requests a tool call.
+Карьерный рост и профессиональная самореализация для меня критически важны.
 
-**Q19.** If an agent read too little code and gave an incorrect answer about the API, what went wrong in its tool-use strategy?
+Дружба для меня — это ценности, а не просто общее времяпрепровождение.
 
----
+Блок 4. Эмоциональная сфера (13 вопросов)
+Мои эмоции часто бывают настолько сильными, что я теряю контроль.
 
-## Bot Architecture & Integration
+В целом я смотрю на жизнь оптимистично, даже в трудные времена.
 
-**Q20.** How to separate Telegram transport code from business logic so the bot can be tested without Telegram?
+Я легко понимаю, что чувствует другой человек, по его мимике и интонациям.
 
-> Expect: separate handlers (business logic) from transport (Telegram); use CLI `--test` mode or call handlers directly in tests.
+В критической ситуации я могу быстро взять себя в руки.
 
-**Q21.** Compare LLM-based intent routing with traditional command parsing. Give one advantage and one disadvantage of each.
+Я склонен к внезапным сменам настроения без видимой причины.
 
-> Expect: user message → tool definitions → LLM decision → tool execution → feeding results back → final response.
+Мне часто бывает тревожно, даже когда всё хорошо.
 
----
+Я умею успокаивать себя сам, без помощи извне (еды, алкоголя, других людей).
 
-## System Design
+Чужие страдания оставляют меня равнодушным (обратный вопрос).
 
-**Q22.** Draw and describe the architecture of the LMS system we built during the labs. Include all components, how they communicate and are deployed.
+Я долго переживаю обиды, могу помнить их годами.
 
-> Expect: FastAPI backend + PostgreSQL on VM via Docker Compose; Telegram bot service calling backend API; LLM API (OpenRouter/Qwen) for agent and intent routing; ETL sync from external API; deployment via Docker Compose on remote VM; diagram showing containers, network connections, and external services.
+Я редко проявляю сильные эмоции открыто, даже если внутри всё кипит.
+
+Я хорошо распознаю, когда человек говорит одно, а чувствует другое.
+
+Стрессовая ситуация мобилизует меня, а не парализует.
+
+Я часто смеюсь от души и заражаю других весельем.
+
+Блок 5. Когнитивные особенности (12 вопросов)
+Я быстро нахожу решение в новой нестандартной ситуации.
+
+Прежде чем принять решение, я взвешиваю все «за» и «против» по пунктам.
+
+Мне нравится анализировать данные и искать закономерности.
+
+Я часто полагаюсь на интуицию — на «чутьё», а не на логику.
+
+Мне трудно изменить свою точку зрения, даже если приводят веские аргументы.
+
+Я генерирую много идей даже без внешнего стимула.
+
+Я люблю критически оценивать информацию из СМИ и интернета.
+
+В новой обстановке я быстро ориентируюсь и понимаю, как действовать.
+
+Мне сложно сосредоточиться на деталях, я вижу картину целиком.
+
+Я способен долго удерживать внимание на однообразной работе.
+
+Я легко перестраиваю планы, если обстоятельства меняются.
+
+Мне нравится решать логические задачи и головоломки.
+
+Блок 6. Способности и одарённость (12 вопросов)
+Я быстро запоминаю новую информацию (тексты, цифры, лица).
+
+В школе/университете мне легко давались точные науки (математика, физика).
+
+Я чувствую ритм и мелодию, мне легко учиться музыке.
+
+У меня хорошо развито воображение, я могу придумать необычный сюжет.
+
+Я замечаю детали, которые другие пропускают.
+
+Я могу одновременно удерживать в голове несколько задач и переключаться между ними.
+
+Мне легко даётся изучение иностранных языков.
+
+Я хорошо владею своим телом (спорт, танец, ручная работа).
+
+Я быстро учусь новым навыкам, мне достаточно показать один раз.
+
+Другие считают меня творческим человеком.
+
+Я часто нахожу нестандартные решения проблем, где другие заходят в тупик.
+
+Мне легко общаться и находить подход к разным людям (социальная одарённость).
+
+Блок 7. Мотивация и направленность (13 вопросов)
+Для меня важно иметь стабильный доход и уверенность в завтрашнем дне.
+
+Я стремлюсь к признанию, почёту и уважению со стороны окружающих.
+
+Мною движет любопытство — я учусь новому ради самого процесса.
+
+У меня есть долгосрочная цель в жизни, к которой я иду несколько лет.
+
+Я получаю удовольствие от работы, которая приносит пользу другим.
+
+Меня вдохновляют сложные задачи, где нужно преодолевать себя.
+
+Я предпочитаю делать только то, что у меня хорошо получается (страх неудачи).
+
+Мне важно чувствовать себя независимым и свободным в своих решениях.
+
+Я люблю соревноваться и побеждать — это мой главный двигатель.
+
+Мне трудно начать дело, если нет внешнего срока или контроля.
+
+Я часто действую под влиянием момента, а не из долгосрочных планов.
+
+Меня глубоко мотивирует создание чего-то нового, что останется после меня.
+
+Безопасность и защищённость моей семьи — главная движущая сила моих поступков.
+
+Блок 8. Самосознание и самооценка (13 вопросов)
+Я хорошо представляю свои сильные и слабые стороны.
+
+В целом я доволен собой и оцениваю себя достаточно высоко.
+
+Я часто ставлю перед собой очень сложные, почти недостижимые цели.
+
+Я склонен анализировать свои поступки после того, как они совершены.
+
+Мне трудно принять комплимент — я чувствую, что не заслужил его (низкая самооценка).
+
+Я сравниваю себя с другими и часто не в свою пользу.
+
+Моя самооценка устойчива и редко меняется из-за критики или похвалы.
+
+Я знаю, что я хочу от жизни в ближайшие 5–10 лет.
+
+Мне легко быть честным с самим собой о своих истинных мотивах.
+
+Я часто переоцениваю свои возможности и потом разочаровываюсь.
+
+Я могу посмотреть на свою жизнь со стороны и сделать объективные выводы.
+
+Мне свойственна самокритика, иногда даже чрезмерная.
+
+Мои цели обычно соответствуют моим реальным способностям.
