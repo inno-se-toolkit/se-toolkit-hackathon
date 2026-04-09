@@ -113,7 +113,7 @@ A multi-platform system with:
 ### For Car Enthusiasts
 
 1. **Via Website:**
-   - Open `http://YOUR_SERVER_IP:5000`
+   - Open `http://localhost:5000`
    - Register an account
    - Browse available JDM cars
    - Use the configurator to customize your build
@@ -127,7 +127,7 @@ A multi-platform system with:
 
 ### For Service Centers
 
-1. Open `http://YOUR_SERVER_IP:5001`
+1. Open `http://localhost:5001`
 2. Register as a service center
 3. Browse available orders
 4. Claim orders you want to fulfill
@@ -145,6 +145,9 @@ A multi-platform system with:
 
 ## Deployment
 
+> **Note:** All services run on **localhost** since the VM IP is treated as localhost.
+> Access services from within the VM using `http://localhost:<port>`.
+
 ### Prerequisites
 
 - **OS:** Ubuntu 24.04 (or any Linux with Docker support)
@@ -152,6 +155,21 @@ A multi-platform system with:
 - **Docker Compose** (version 2.0 or higher)
 - **Git**
 - **Telegram account** (to create a bot via @BotFather)
+
+### Quick Deploy (5 minutes)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/YOUR_USERNAME/se-toolkit-hackathon.git
+cd se-toolkit-hackathon
+
+# 2. Configure environment
+cp .env.example .env
+nano .env  # Edit BOT_TOKEN and other settings
+
+# 3. Deploy
+./deploy.sh
+```
 
 ### Step-by-Step Instructions
 
@@ -248,16 +266,13 @@ docker compose logs -f
 
 #### 7. Access Services
 
+All services are accessible via **localhost** from within the VM:
+
 | Service | URL | Description |
 |---------|-----|-------------|
-| Client Website | `http://YOUR_IP:5000` | Car configurator for customers |
-| Admin Panel | `http://YOUR_IP:5001` | Order management (Password: `service2024`) |
+| Client Website | `http://localhost:5000` | Car configurator for customers |
+| Admin Panel | `http://localhost:5001` | Order management (Password: `service2024`) |
 | Telegram Bot | Search on Telegram | Bot interface |
-
-Get your server IP:
-```bash
-curl ifconfig.me
-```
 
 #### 8. Configure Firewall (if needed)
 
@@ -290,6 +305,23 @@ docker compose up -d --build
 docker compose down -v
 docker compose up -d --build
 ```
+
+### Troubleshooting
+
+**Bot not starting?**
+```bash
+docker compose logs bot
+# Verify BOT_TOKEN is valid from @BotFather
+```
+
+**Website not accessible?**
+```bash
+docker compose ps           # Check containers are running
+docker compose logs client  # Check for errors
+sudo ufw allow 5000/tcp     # Open firewall
+```
+
+**Need full details?** See [DEPLOYMENT.md](DEPLOYMENT.md) for the comprehensive guide.
 
 ---
 
